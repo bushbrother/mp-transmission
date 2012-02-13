@@ -1,0 +1,7 @@
+C:\Users\Richards\Documents\Visual Studio 2010\Projects\mptransmission\obj\Debug\ResolveAssemblyReference.cache
+C:\Users\Richards\Documents\Visual Studio 2010\Projects\mptransmission\obj\Debug\mptransmission.OtherStrings.resources
+C:\Users\Richards\Documents\Visual Studio 2010\Projects\mptransmission\obj\Debug\mptransmission.Properties.Resources.resources
+C:\Users\Richards\Documents\Visual Studio 2010\Projects\mptransmission\obj\Debug\mptransmission.SetupForm.resources
+C:\Users\Richards\Documents\Visual Studio 2010\Projects\mptransmission\obj\Debug\ResGen.read.1.tlog
+C:\Users\Richards\Documents\Visual Studio 2010\Projects\mptransmission\obj\Debug\ResGen.write.1.tlog
+C:\Users\Richards\Documents\Visual Studio 2010\Projects\mptransmission\obj\Debug\mptransmission.g.resources

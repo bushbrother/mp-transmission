@@ -1,0 +1,66 @@
+<window>
+  <id>56345</id>
+  <defaultcontrol>2</defaultcontrol>
+  <allowoverlay>yes</allowoverlay>
+  <controls>
+
+    <control>
+      <description>BackGround</description>
+      <type>image</type>
+      <id>4</id>
+      <posX>0</posX>
+      <posY>0</posY>
+      <width>720</width>
+      <height>576</height>
+      <texture>background.png</texture>
+    </control>
+
+    <control>
+      <description>an Image</description>
+      <type>image</type>
+      <id>5</id>
+      <posX>75</posX>
+      <posY>370</posY>
+      <texture>hover_my videos.png</texture>
+    </control>
+
+    <control>
+      <description>text label</description>
+      <type>label</type>
+      <id>1</id>
+      <posX>250</posX>
+      <posY>70</posY>
+      <label>Some text</label>
+      <font>font16</font>
+      <align>right</align>
+      <textcolor>ffffffff</textcolor>
+    </control>
+
+    <control>
+      <description>Try Me</description>
+      <type>button</type>
+      <id>2</id>
+      <posX>60</posX>
+      <posY>97</posY>
+      <label>Try Me</label>
+      <onleft>2</onleft>
+      <onright>2</onright>
+      <onup>2</onup>
+      <ondown>3</ondown>
+    </control>
+
+    <control>
+      <description>Or Me</description>
+      <type>button</type>
+      <id>3</id>
+      <posX>60</posX>
+      <posY>131</posY>
+      <label>Or Me</label>
+      <onleft>2</onleft>
+      <onright>2</onright>
+      <onup>2</onup>
+      <ondown>2</ondown>
+    </control>
+
+  </controls>
+</window>
