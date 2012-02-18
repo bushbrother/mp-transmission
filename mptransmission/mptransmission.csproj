@@ -62,7 +62,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Client.cs" />
     <Compile Include="LocalSettings.cs" />
     <Compile Include="ProtocolConstants.cs" />
     <Compile Include="mptransmission.cs" />

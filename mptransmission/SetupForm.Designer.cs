@@ -62,6 +62,7 @@ namespace mptransmission
             this.label4 = new System.Windows.Forms.Label();
             this.buttonTest = new System.Windows.Forms.Button();
             this.downloadText = new System.Windows.Forms.TextBox();
+            this.label5 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -185,11 +186,21 @@ namespace mptransmission
             // 
             // downloadText
             // 
-            this.downloadText.Location = new System.Drawing.Point(117, 331);
+            this.downloadText.BackColor = System.Drawing.SystemColors.Window;
+            this.downloadText.Location = new System.Drawing.Point(114, 344);
             this.downloadText.Name = "downloadText";
             this.downloadText.Size = new System.Drawing.Size(183, 20);
             this.downloadText.TabIndex = 14;
             this.downloadText.TextChanged += new System.EventHandler(this.downloadText_TextChanged);
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(111, 327);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(64, 13);
+            this.label5.TabIndex = 15;
+            this.label5.Text = "Test Result:";
             // 
             // SetupForm
             // 
@@ -198,6 +209,7 @@ namespace mptransmission
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.buttonCancel;
             this.ClientSize = new System.Drawing.Size(510, 376);
+            this.Controls.Add(this.label5);
             this.Controls.Add(this.downloadText);
             this.Controls.Add(this.buttonTest);
             this.Controls.Add(this.label4);
@@ -239,5 +251,6 @@ namespace mptransmission
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Button buttonTest;
         private System.Windows.Forms.TextBox downloadText;
+        private System.Windows.Forms.Label label5;
     }
 }

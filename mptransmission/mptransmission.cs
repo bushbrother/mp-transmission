@@ -35,9 +35,29 @@ namespace mptransmission
     public class mptransmission : GUIWindow, ISetupForm
     {
         [SkinControlAttribute(2)]
-        protected GUIButtonControl buttonOne = null;
+        protected GUIButtonControl button_ActiveTorrents = null;
         [SkinControlAttribute(3)]
-        protected GUIButtonControl buttonTwo = null;
+        protected GUIButtonControl button_AllTorrents = null;
+        [SkinControlAttribute(4)]
+        protected GUIButtonControl button_SearchTorrents = null;
+        [SkinControlAttribute(5)]
+        protected GUIButtonControl button_WatchList = null;
+        [SkinControlAttribute(6)]
+        protected GUIButtonControl button_RSS = null;
+        [SkinControlAttribute(7)]
+        protected GUIButtonControl button_Log = null;
+        [SkinControlAttribute(8)]
+        protected GUIListControl torrentList = null;
+        [SkinControlAttribute(101)]
+        protected GUILabelControl lbl_dlspeed = null;
+        [SkinControlAttribute(102)]
+        protected GUILabelControl lbl_upspeed = null;
+        [SkinControlAttribute(103)]
+        protected GUILabelControl lbl_cnt_ld = null;
+        [SkinControlAttribute(104)]
+        protected GUILabelControl lbl_cnt_sd = null;
+        [SkinControlAttribute(105)]
+        protected GUILabelControl lbl_prgs = null;
 
         public mptransmission()
         {
@@ -160,33 +180,22 @@ namespace mptransmission
         protected override void OnClicked(int controlId, GUIControl control,
           MediaPortal.GUI.Library.Action.ActionType actionType)
         {
-            if (control == buttonOne)
-                OnButtonOne();
-            if (control == buttonTwo)
-                OnButtonTwo();
+            if (control == button_ActiveTorrents)
+                activeTorrents();
             base.OnClicked(controlId, control, actionType);
         }
 
-        private void OnButtonOne()
+        private void activeTorrents()
         {
-            GUIDialogOK dlg = (GUIDialogOK)GUIWindowManager.GetWindow(
-              (int)GUIWindow.Window.WINDOW_DIALOG_OK);
-            dlg.SetHeading("Button has been pressed");
-            dlg.SetLine(1, "You pressed button 1");
-            dlg.SetLine(2, String.Empty);
-            dlg.SetLine(3, String.Empty);
-            dlg.DoModal(GUIWindowManager.ActiveWindow);
-        }
-
-        private void OnButtonTwo()
-        {
-            GUIDialogOK dlg = (GUIDialogOK)GUIWindowManager.GetWindow(
-              (int)GUIWindow.Window.WINDOW_DIALOG_OK);
-            dlg.SetHeading("Button has been pressed");
-            dlg.SetLine(1, "You pressed button 2");
-            dlg.SetLine(2, String.Empty);
-            dlg.SetLine(3, String.Empty);
-            dlg.DoModal(GUIWindowManager.ActiveWindow);
+            /*
+            GUIPropertyManager.SetProperty("#MyTorrents.CombinedDownloadSpeed", UnitConvert.TransferSpeedToString(downloadSpeed));
+            GUIPropertyManager.SetProperty("#MyTorrents.CombinedUploadSpeed", UnitConvert.TransferSpeedToString(uploadSpeed));
+            GUIPropertyManager.SetProperty("#MyTorrents.Downloads.Count", string.Format("{0}", TorrentsActive.Count - seeding));
+            GUIPropertyManager.SetProperty("#MyTorrents.Uploads.Count", string.Format("{0}", seeding));
+            GUIPropertyManager.SetProperty("#MyTorrents.Ready.Count", string.Format("{0}", TorrentsAll.Count - TorrentsActive.Count));
+            GUIPropertyManager.SetProperty("#MyTorrents.Unfinished.Count", string.Format("{0}", unfinished));
+            GUIPropertyManager.SetProperty("#MyTorrents.AverageProgressOfUnfinished", string.Format("{0:F2}", avgProgress / unfinished));
+            */
         }
 
         #endregion
