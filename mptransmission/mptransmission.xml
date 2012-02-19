@@ -2,65 +2,54 @@
   <id>56345</id>
   <defaultcontrol>2</defaultcontrol>
   <allowoverlay>yes</allowoverlay>
+  <disabletopbar>no</disabletopbar>
+  <define>#header.label:mp-transmission</define>
+  <define>#header.hover:hover_my tv.png</define>
+  <import>common.time.xml</import>
   <controls>
-
     <control>
-      <description>BackGround</description>
-      <type>image</type>
-      <id>4</id>
-      <posX>0</posX>
-      <posY>0</posY>
-      <width>720</width>
-      <height>576</height>
-      <texture>background.png</texture>
+          <description>Background Image</description>
+          <type>image</type>
+          <id>1</id>
+          <posX>0</posX>
+          <posY>0</posY>
+          <width>1280</width>
+          <height>720</height>
+          <texture>#header.hover</texture>
     </control>
-
     <control>
-      <description>an Image</description>
-      <type>image</type>
-      <id>5</id>
-      <posX>75</posX>
-      <posY>370</posY>
-      <texture>hover_my videos.png</texture>
+          <description>Overlay Image</description>
+          <type>image</type>
+          <id>1</id>
+          <posX>0</posX>
+          <posY>0</posY>
+          <width>1280</width>
+          <height>720</height>
+          <texture>black.png</texture>
+          <colordiffuse>90ffffff</colordiffuse>
     </control>
-
     <control>
-      <description>text label</description>
-      <type>label</type>
-      <id>1</id>
-      <posX>250</posX>
-      <posY>70</posY>
-      <label>Some text</label>
-      <font>font16</font>
-      <align>right</align>
-      <textcolor>ffffffff</textcolor>
-    </control>
-
-    <control>
-      <description>Try Me</description>
+      <description>Check Downloads</description>
       <type>button</type>
       <id>2</id>
       <posX>60</posX>
       <posY>97</posY>
-      <label>Try Me</label>
+      <label>Check Downloads</label>
       <onleft>2</onleft>
       <onright>2</onright>
       <onup>2</onup>
       <ondown>3</ondown>
     </control>
-
     <control>
-      <description>Or Me</description>
-      <type>button</type>
-      <id>3</id>
+      <description>text label</description>
+      <type>label</type>
+      <id>101</id>
       <posX>60</posX>
-      <posY>131</posY>
-      <label>Or Me</label>
-      <onleft>2</onleft>
-      <onright>2</onright>
-      <onup>2</onup>
-      <ondown>2</ondown>
+      <posY>150</posY>
+      <label>#numDownloads</label>
+      <font>mediastream9c</font>
+      <textcolor>ff025984</textcolor>
+      <visible>true</visible>
     </control>
-
   </controls>
 </window>

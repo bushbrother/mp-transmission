@@ -28,36 +28,16 @@ using System.Net;
 using Jayrock.Json;
 using Jayrock.Json.Conversion;
 using Jayrock;
+using System.Collections;
+using System.Timers;
 
 namespace mptransmission
 {
     [PluginIcons("mptransmission.Icon.png", "mptransmission.Icon_Disabled.png")]
     public class mptransmission : GUIWindow, ISetupForm
     {
-        [SkinControlAttribute(2)]
-        protected GUIButtonControl button_ActiveTorrents = null;
-        [SkinControlAttribute(3)]
-        protected GUIButtonControl button_AllTorrents = null;
-        [SkinControlAttribute(4)]
-        protected GUIButtonControl button_SearchTorrents = null;
-        [SkinControlAttribute(5)]
-        protected GUIButtonControl button_WatchList = null;
-        [SkinControlAttribute(6)]
-        protected GUIButtonControl button_RSS = null;
-        [SkinControlAttribute(7)]
-        protected GUIButtonControl button_Log = null;
-        [SkinControlAttribute(8)]
-        protected GUIListControl torrentList = null;
-        [SkinControlAttribute(101)]
-        protected GUILabelControl lbl_dlspeed = null;
-        [SkinControlAttribute(102)]
-        protected GUILabelControl lbl_upspeed = null;
-        [SkinControlAttribute(103)]
-        protected GUILabelControl lbl_cnt_ld = null;
-        [SkinControlAttribute(104)]
-        protected GUILabelControl lbl_cnt_sd = null;
-        [SkinControlAttribute(105)]
-        protected GUILabelControl lbl_prgs = null;
+        [SkinControlAttribute(2)] protected GUIButtonControl button_ActiveTorrents = null;
+        [SkinControlAttribute(101)] protected GUILabelControl label_numDownloads = null;
 
         public mptransmission()
         {
@@ -174,7 +154,7 @@ namespace mptransmission
 
         public override bool Init()
         {
-            return Load(GUIGraphicsContext.Skin + @"\mptransmission.xml");
+            return Load(GUIGraphicsContext.Skin+@"\mptransmission.xml");
         }
 
         protected override void OnClicked(int controlId, GUIControl control,
@@ -187,18 +167,165 @@ namespace mptransmission
 
         private void activeTorrents()
         {
-            /*
-            GUIPropertyManager.SetProperty("#MyTorrents.CombinedDownloadSpeed", UnitConvert.TransferSpeedToString(downloadSpeed));
-            GUIPropertyManager.SetProperty("#MyTorrents.CombinedUploadSpeed", UnitConvert.TransferSpeedToString(uploadSpeed));
-            GUIPropertyManager.SetProperty("#MyTorrents.Downloads.Count", string.Format("{0}", TorrentsActive.Count - seeding));
-            GUIPropertyManager.SetProperty("#MyTorrents.Uploads.Count", string.Format("{0}", seeding));
-            GUIPropertyManager.SetProperty("#MyTorrents.Ready.Count", string.Format("{0}", TorrentsAll.Count - TorrentsActive.Count));
-            GUIPropertyManager.SetProperty("#MyTorrents.Unfinished.Count", string.Format("{0}", unfinished));
-            GUIPropertyManager.SetProperty("#MyTorrents.AverageProgressOfUnfinished", string.Format("{0:F2}", avgProgress / unfinished));
-            */
+            int numOfTorrents = 0;
+            Connect(out numOfTorrents);
+            GUIPropertyManager.SetProperty("#numDownloads", string.Format("{0}",numOfTorrents));
         }
 
         #endregion
 
+        public void Connect(out int numTorrents)
+        {
+                var url = new Uri("http://" + LocalSettings.Hostname + ":" + LocalSettings.Port + "/transmission/rpc");
+                var client = new TransmissionClient(url);
+                string[] torrentNames = new string[100];
+                string[] torrentPercent = new string[100];
+                string[] torrentSize = new string[100];
+                string[] torrentPeers = new string[100];
+                string[] torrentLeechers = new string[100];
+                string[] torrentSeeds = new string[100];
+                JsonObject session = (JsonObject)client.Invoke("session-stats", null);
+                JsonNumber num = (JsonNumber)session["activeTorrentCount"];
+                numTorrents = (int)num;
+                JsonNumber download = (JsonNumber)session["downloadSpeed"];
+                int downSpeed = (int)download / 1024;
+                JsonNumber upload = (JsonNumber)session["uploadSpeed"];
+                int upSpeed = (int)upload;
+                var torrent = (IDictionary)client.Invoke("torrent-get", new { fields = new[] { "name", "percentDone", "sizeWhenDone", "peersConnected", "peersGettingFromUs", "peersSendingToUs" } }, null);
+                var i = 0;
+                foreach (IDictionary torrents in (IList)torrent["torrents"])
+                {
+                    if (i < numTorrents)
+                    {
+                        torrentNames[i] = (string)torrents["name"];
+                        JsonNumber percent = (JsonNumber)torrents["percentDone"];
+                        double tempPercent = (double)percent;
+                        torrentPercent[i] = tempPercent.ToString("0.00%");
+                        JsonNumber size = (JsonNumber)torrents["sizeWhenDone"];
+                        double tempSize = (double)size;
+                        tempSize = tempSize / 1048576;
+                        torrentSize[i] = tempSize.ToString("0.00MB");
+                        JsonNumber peers = (JsonNumber)torrents["peersConnected"];
+                        double tempPeers = (double)peers;
+                        torrentPeers[i] = tempPeers.ToString();
+                        JsonNumber leechers = (JsonNumber)torrents["peersGettingFromUs"];
+                        double tempLeechers = (double)leechers;
+                        torrentLeechers[i] = tempLeechers.ToString();
+                        JsonNumber seeds = (JsonNumber)torrents["peersSendingToUs"];
+                        double tempSeeds = (double)seeds;
+                        torrentSeeds[i] = tempSeeds.ToString();
+                        i++;
+                    }
+                }
+        }
+
+        public class TransmissionClient
+        {
+            public Uri Url { get; private set; }
+            public WebClient WebClient { get; set; }
+            public string SessionId { get; private set; }
+
+            public TransmissionClient(Uri url) : this(url, null) { }
+
+            public TransmissionClient(Uri url, WebClient wc)
+            {
+                if (url == null) throw new ArgumentNullException("url");
+                Url = url;
+                WebClient = wc;
+            }
+
+            public object Invoke(string method, object args)
+            {
+                return Invoke(method, args, null);
+            }
+
+            public virtual object Invoke(string method, object args, JsonNumber? tag)
+            {
+                if (method == null) throw new ArgumentNullException("method");
+
+                var sessionId = SessionId;
+                var wc = WebClient ?? new WebClient();
+                var url = Url;
+
+                // 2.1.  Requests
+                //  
+                //     Requests support three keys:
+                //  
+                //     (1) A required "method" string telling the name of the method to invoke
+                //     (2) An optional "arguments" object of key/value pairs
+                //     (3) An optional "tag" number used by clients to track responses.
+                //         If provided by a request, the response MUST include the same tag.
+
+                var request = new
+                {
+                    method,
+                    arguments = args,
+                    tag,
+                };
+
+                while (true)
+                {
+                    try
+                    {
+                        if (!string.IsNullOrEmpty(sessionId))
+                            wc.Headers.Add("X-Transmission-Session-Id", sessionId);
+                        var requestJson = JsonConvert.ExportToString(request);
+                        var responseJson = wc.UploadString(url, requestJson);
+
+                        // 2.2.  Responses
+                        //  
+                        //     Reponses support three keys:
+                        //  
+                        //     (1) A required "result" string whose value MUST be "success" on success,
+                        //         or an error string on failure.
+                        //     (2) An optional "arguments" object of key/value pairs
+                        //     (3) An optional "tag" number as described in 2.1.
+
+                        var responseObject = JsonConvert.Import<JsonObject>(responseJson);
+
+                        var result = (responseObject["result"] ?? string.Empty).ToString();
+                        if ("error".Equals(result, StringComparison.OrdinalIgnoreCase))
+                            throw new Exception("Method failed.");
+                        if (!"success".Equals(result, StringComparison.OrdinalIgnoreCase))
+                            throw new Exception("Unexpected response result.");
+
+                        if (tag != null && tag.Value.LogicallyEquals(responseObject["tag"]))
+                            throw new Exception("Missing or unexpected tag in response.");
+
+                        return responseObject["arguments"];
+                    }
+                    catch (WebException e)
+                    {
+                        // 2.3.1.  CSRF Protection
+                        //
+                        //     Most Transmission RPC servers require a X-Transmission-Session-Id
+                        //     header to be sent with requests, to prevent CSRF attacks.
+                        //  
+                        //     When your request has the wrong id -- such as when you send your first
+                        //     request, or when the server expires the CSRF token -- the
+                        //     Transmission RPC server will return an HTTP 409 error with the
+                        //     right X-Transmission-Session-Id in its own headers.
+                        //
+                        //     So, the correct way to handle a 409 response is to update your
+                        //     X-Transmission-Session-Id and to resend the previous request.
+
+                        HttpWebResponse response;
+                        if (e.Status == WebExceptionStatus.ProtocolError
+                            && (response = e.Response as HttpWebResponse) != null
+                            && response.StatusCode == /* 409 */ HttpStatusCode.Conflict)
+                        {
+                            sessionId = response.GetResponseHeader("X-Transmission-Session-Id");
+                            if (!string.IsNullOrEmpty(sessionId))
+                            {
+                                SessionId = sessionId;
+                                continue;
+                            }
+                        }
+
+                        throw;
+                    }
+                }
+            }
+        }
     }
 }
