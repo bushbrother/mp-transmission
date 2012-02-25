@@ -69,3 +69,4 @@ C:\Users\Richards\Documents\Visual Studio 2010\Projects\mptransmission\obj\Relea
 C:\Users\Richards\Documents\Visual Studio 2010\Projects\mptransmission\obj\Release\mptransmission.g.resources
 C:\Users\Richards\Documents\Visual Studio 2010\Projects\mptransmission\bin\Release\Jayrock.pdb
 C:\Users\Richards\Documents\Visual Studio 2010\Projects\mptransmission\bin\Release\Jayrock.Json.pdb
+C:\Users\Richards\Documents\Visual Studio 2010\Projects\mptransmission\obj\Release\mptransmission.Properties.Resources.resources
