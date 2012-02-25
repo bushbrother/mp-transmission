@@ -63,6 +63,8 @@ namespace mptransmission
             this.buttonTest = new System.Windows.Forms.Button();
             this.downloadText = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
+            this.comboBox1 = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -117,7 +119,7 @@ namespace mptransmission
             this.checkBoxAuth.Name = "checkBoxAuth";
             this.checkBoxAuth.Size = new System.Drawing.Size(147, 17);
             this.checkBoxAuth.TabIndex = 6;
-            this.checkBoxAuth.Text = "Use User Authentication?";
+            this.checkBoxAuth.Text = "Use RPC Authentication?";
             this.checkBoxAuth.UseVisualStyleBackColor = true;
             this.checkBoxAuth.CheckedChanged += new System.EventHandler(this.checkBoxAuth_CheckedChanged);
             // 
@@ -202,6 +204,24 @@ namespace mptransmission
             this.label5.TabIndex = 15;
             this.label5.Text = "Test Result:";
             // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(317, 187);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(102, 13);
+            this.label6.TabIndex = 16;
+            this.label6.Text = "Plugin Refresh Rate";
+            // 
+            // comboBox1
+            // 
+            this.comboBox1.FormattingEnabled = true;
+            this.comboBox1.Location = new System.Drawing.Point(320, 206);
+            this.comboBox1.Name = "comboBox1";
+            this.comboBox1.Size = new System.Drawing.Size(144, 21);
+            this.comboBox1.TabIndex = 17;
+            this.comboBox1.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
+            // 
             // SetupForm
             // 
             this.AcceptButton = this.buttonOK;
@@ -209,6 +229,8 @@ namespace mptransmission
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.buttonCancel;
             this.ClientSize = new System.Drawing.Size(510, 376);
+            this.Controls.Add(this.comboBox1);
+            this.Controls.Add(this.label6);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.downloadText);
             this.Controls.Add(this.buttonTest);
@@ -252,5 +274,7 @@ namespace mptransmission
         private System.Windows.Forms.Button buttonTest;
         private System.Windows.Forms.TextBox downloadText;
         private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.ComboBox comboBox1;
     }
 }

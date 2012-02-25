@@ -33,12 +33,14 @@ namespace mptransmission
         public SetupForm()
         {
             InitializeComponent();
+            this.comboBox1.Items.AddRange(new object[] { "5 Seconds", "10 Seconds", "15 Seconds", "20 Seconds", "25 Seconds", "30 Seconds" });
             LocalSettings.Load();
             textBoxHostname.Text = LocalSettings.Hostname;
             textBoxPort.Text = LocalSettings.Port;
             checkBoxAuth.Checked = LocalSettings.Authentication;
             textBoxUsername.Text = LocalSettings.Username;
             textBoxPassword.Text = LocalSettings.Password;
+            comboBox1.Text = LocalSettings.refreshRate;
         }
 
         private void SetupForm_Load(object sender, EventArgs e)
@@ -61,6 +63,7 @@ namespace mptransmission
         {
             LocalSettings.Hostname = textBoxHostname.Text;
             LocalSettings.Port = textBoxPort.Text;
+            LocalSettings.refreshRate = comboBox1.Text;
             if (checkBoxAuth.Checked){
                 LocalSettings.Authentication = true;
                 LocalSettings.Username = textBoxUsername.Text;
@@ -77,6 +80,7 @@ namespace mptransmission
         {
             LocalSettings.Hostname = textBoxHostname.Text;
             LocalSettings.Port = textBoxPort.Text;
+            LocalSettings.refreshRate = comboBox1.Text;
             if (checkBoxAuth.Checked)
             {
                 LocalSettings.Authentication = true;
@@ -245,6 +249,11 @@ namespace mptransmission
                     }
                 }
             }
+        }
+
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }

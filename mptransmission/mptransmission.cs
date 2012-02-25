@@ -36,7 +36,6 @@ namespace mptransmission
     [PluginIcons("mptransmission.Icon.png", "mptransmission.Icon_Disabled.png")]
     public class mptransmission : GUIWindow, ISetupForm
     {
-        [SkinControlAttribute(2)] protected GUIButtonControl button_ActiveTorrents = null;
         [SkinControlAttribute(5)] protected GUIListControl torrentList = null;
 
         public mptransmission()
@@ -156,20 +155,46 @@ namespace mptransmission
         {
             LocalSettings.Load();
             GUIPropertyManager.SetProperty("#numDownloads", "0");
+            GUIPropertyManager.SetProperty("#numPausedDownloads", "0");
             GUIPropertyManager.SetProperty("#uploadSpeedTotal", UnitConvert.TransferSpeedToString(0));
             GUIPropertyManager.SetProperty("#downloadSpeedTotal", UnitConvert.TransferSpeedToString(0));
+            activeTorrents();
             return Load(GUIGraphicsContext.Skin+@"\mptransmission.xml");
         }
 
-        protected override void OnClicked(int controlId, GUIControl control,
-          MediaPortal.GUI.Library.Action.ActionType actionType)
+        private void activeTorrents()
         {
-            if (control == button_ActiveTorrents)
-                activeTorrents();
-            base.OnClicked(controlId, control, actionType);
+            System.Timers.Timer aTimer = new System.Timers.Timer();
+            aTimer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
+            // Set the Interval to settings value.
+            if (LocalSettings.refreshRate == "5 Seconds")
+            {
+                aTimer.Interval = 5000;
+            }
+            if (LocalSettings.refreshRate == "10 Seconds")
+            {
+                aTimer.Interval = 10000;
+            }
+            if (LocalSettings.refreshRate == "15 Seconds")
+            {
+                aTimer.Interval = 15000;
+            }
+            if (LocalSettings.refreshRate == "20 Seconds")
+            {
+                aTimer.Interval = 20000;
+            }
+            if (LocalSettings.refreshRate == "25 Seconds")
+            {
+                aTimer.Interval = 25000;
+            }
+            if (LocalSettings.refreshRate == "30 Seconds")
+            {
+                aTimer.Interval = 30000;
+            }
+            aTimer.Enabled = true;
         }
 
-        private void activeTorrents()
+        private void OnTimedEvent(object source, ElapsedEventArgs e)
         {
             Connect();
         }
@@ -186,14 +211,17 @@ namespace mptransmission
                 string[] torrentPeers = new string[100];
                 string[] torrentLeechers = new string[100];
                 string[] torrentSeeds = new string[100];
+                string[] torrentEta = new string[100];
                 JsonObject session = (JsonObject)client.Invoke("session-stats", null);
                 JsonNumber num = (JsonNumber)session["activeTorrentCount"];
                 int numTorrents = (int)num;
+                JsonNumber numPaused = (JsonNumber)session["pausedTorrentCount"];
+                int pausedTorrents = (int)numPaused;
                 JsonNumber download = (JsonNumber)session["downloadSpeed"];
                 int downSpeed = (int)download;
                 JsonNumber upload = (JsonNumber)session["uploadSpeed"];
                 int upSpeed = (int)upload;
-                var torrent = (IDictionary)client.Invoke("torrent-get", new { fields = new[] { "name", "percentDone", "sizeWhenDone", "peersConnected", "peersGettingFromUs", "peersSendingToUs" } }, null);
+                var torrent = (IDictionary)client.Invoke("torrent-get", new { fields = new[] { "name", "percentDone", "sizeWhenDone", "peersConnected", "peersGettingFromUs", "peersSendingToUs", "eta" } }, null);
                 var i = 0;
                 foreach (IDictionary torrents in (IList)torrent["torrents"])
                 {
@@ -215,12 +243,19 @@ namespace mptransmission
                         JsonNumber seeds = (JsonNumber)torrents["peersSendingToUs"];
                         double tempSeeds = (double)seeds;
                         torrentSeeds[i] = tempSeeds.ToString();
+                        JsonNumber eta = (JsonNumber)torrents["eta"];
+                        double tempEta = (double)eta;
+                        torrentEta[i] = tempEta.ToString();
                         i++;
                     }
                 }
             GUIPropertyManager.SetProperty("#numDownloads", numTorrents.ToString("0"));
+            GUIPropertyManager.SetProperty("#numPausedDownloads", pausedTorrents.ToString("0"));
             GUIPropertyManager.SetProperty("#uploadSpeedTotal", UnitConvert.TransferSpeedToString(upSpeed));
             GUIPropertyManager.SetProperty("#downloadSpeedTotal", UnitConvert.TransferSpeedToString(downSpeed));
+
+            //GUIListItem item = new GUIListItem(string.Format("{0} ({1:F2}%)", torrentNames[i], torrentPercent[i]));
+            //torrentList.Add(item);
         }
 
         public class TransmissionClient

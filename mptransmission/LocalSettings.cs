@@ -75,6 +75,16 @@ namespace mptransmission.Settings
         }
         private static string authenticationCheck = String.Empty;
 
+        /// <summary>
+        /// The transmission username
+        /// </summary>
+        public static string refreshRate
+        {
+            get { return refresh; }
+            set { refresh = value; }
+        }
+        private static string refresh = String.Empty;
+
         #endregion
 
         #region LoadSettings
@@ -90,6 +100,7 @@ namespace mptransmission.Settings
                 Hostname = reader.GetValue(mptransmission.ConfigSection, "hostname");
                 Port = reader.GetValue(mptransmission.ConfigSection, "port");
                 AuthenticationCheck = reader.GetValue(mptransmission.ConfigSection, "authentication");
+                refreshRate = reader.GetValue(mptransmission.ConfigSection, "refreshRate");
 
                 // Convert String to Bool
                 if (AuthenticationCheck == "False")
@@ -124,6 +135,7 @@ namespace mptransmission.Settings
                 xmlwriter.SetValue(mptransmission.ConfigSection, "password", encryptedPassword);
                 xmlwriter.SetValue(mptransmission.ConfigSection, "port", Port);
                 xmlwriter.SetValue(mptransmission.ConfigSection, "authentication", Authentication);
+                xmlwriter.SetValue(mptransmission.ConfigSection, "refreshRate", refreshRate);
             }
         }
 
