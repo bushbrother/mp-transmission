@@ -5,7 +5,6 @@
   <disabletopbar>no</disabletopbar>
   <define>#header.label:mp-transmission</define>
   <define>#header.hover:hover_my tv.png</define>
-  <import>common.time.xml</import>
   <controls>
     <control>
           <description>Background Image</description>
@@ -29,26 +28,98 @@
           <colordiffuse>90ffffff</colordiffuse>
     </control>
     <control>
+      <description>Overlay Image</description>
+      <type>image</type>
+      <id>1</id>
+      <posX>0</posX>
+      <posY>0</posY>
+      <width>1280</width>
+      <height>60</height>
+      <texture>overlay_topbar.png</texture>
+      <colordiffuse>c9ffffff</colordiffuse>
+    </control>
+    <control>
+      <id>1</id>
+      <description>Top Title Background</description>
+      <type>image</type>
+      <posX>77</posX>
+      <posY>11</posY>
+      <width>437</width>
+      <height>35</height>
+      <texture>tvtitlebg.png</texture>
+      <animation effect="slide" start="-514,0" end="0,0" tween="quadratic" time="300" delay="0">WindowOpen</animation>
+      <animation effect="slide" start="0,0" end="-514,0" tween="quadratic" time="300" delay="0">WindowClose</animation>
+      <animation effect="fade" time="150">WindowClose</animation>
+    </control>
+    <control>
+      <id>1</id>
+      <type>fadelabel</type>
+      <description>Top Title</description>
+      <posX>493</posX>
+      <posY>13</posY>
+      <width>350</width>
+      <font>mediastream12c</font>
+      <align>right</align>
+      <visible>yes</visible>
+      <label>mp-transmission</label>
+      <animation effect="slide" start="-514,0" end="0,0" tween="quadratic" time="300" delay="0">WindowOpen</animation>
+      <animation effect="slide" start="0,0" end="-514,0" tween="quadratic" time="300" delay="0">WindowClose</animation>
+      <animation effect="fade" time="150">WindowClose</animation>
+    </control>
+    <import>common.time.xml</import>
+    <control>
       <description>Check Downloads</description>
       <type>button</type>
       <id>2</id>
-      <posX>60</posX>
-      <posY>97</posY>
+      <posX>45</posX>
+      <posY>100</posY>
       <label>Check Downloads</label>
-      <onleft>2</onleft>
-      <onright>2</onright>
-      <onup>2</onup>
+      <onup>8</onup>
       <ondown>3</ondown>
+      <onright>99</onright>
+      <textcolor>ffffffff</textcolor>
+      <textcolorNoFocus>bfffffff</textcolorNoFocus>
+      <font>mediastream12tc</font>
+      <height>40</height>
+      <width>345</width>
+      <textYOff>8</textYOff>
+      <textXOff>20</textXOff>
+      <textureFocus>tv_button_focus.png</textureFocus>
+      <textureNoFocus>tv_button_ no_focus.png</textureNoFocus>
+      <animation effect="fade" time="250">WindowOpen</animation>
+      <animation effect="fade" time="250">WindowClose</animation>
     </control>
     <control>
       <description>text label</description>
       <type>label</type>
-      <id>101</id>
+      <id>0</id>
       <posX>60</posX>
-      <posY>150</posY>
-      <label>#numDownloads</label>
+      <posY>170</posY>
+      <label>#numDownloads Active Torrents</label>
       <font>mediastream9c</font>
-      <textcolor>ff025984</textcolor>
+      <textcolor>ffffffff</textcolor>
+      <visible>true</visible>
+    </control>
+    <control>
+      <description>text label</description>
+      <type>label</type>
+      <id>0</id>
+      <posX>60</posX>
+      <posY>220</posY>
+      <label>#downloadSpeedTotal Download</label>
+      <font>mediastream9c</font>
+      <textcolor>ffffffff</textcolor>
+      <visible>true</visible>
+    </control>
+    <control>
+      <description>text label</description>
+      <type>label</type>
+      <id>0</id>
+      <posX>60</posX>
+      <posY>270</posY>
+      <label>#uploadSpeedTotal Upload</label>
+      <font>mediastream9c</font>
+      <textcolor>ffffffff</textcolor>
       <visible>true</visible>
     </control>
   </controls>

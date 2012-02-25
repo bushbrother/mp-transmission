@@ -37,7 +37,7 @@ namespace mptransmission
     public class mptransmission : GUIWindow, ISetupForm
     {
         [SkinControlAttribute(2)] protected GUIButtonControl button_ActiveTorrents = null;
-        [SkinControlAttribute(101)] protected GUILabelControl label_numDownloads = null;
+        [SkinControlAttribute(5)] protected GUIListControl torrentList = null;
 
         public mptransmission()
         {
@@ -154,6 +154,10 @@ namespace mptransmission
 
         public override bool Init()
         {
+            LocalSettings.Load();
+            GUIPropertyManager.SetProperty("#numDownloads", "0");
+            GUIPropertyManager.SetProperty("#uploadSpeedTotal", UnitConvert.TransferSpeedToString(0));
+            GUIPropertyManager.SetProperty("#downloadSpeedTotal", UnitConvert.TransferSpeedToString(0));
             return Load(GUIGraphicsContext.Skin+@"\mptransmission.xml");
         }
 
@@ -167,14 +171,12 @@ namespace mptransmission
 
         private void activeTorrents()
         {
-            int numOfTorrents = 0;
-            Connect(out numOfTorrents);
-            GUIPropertyManager.SetProperty("#numDownloads", string.Format("{0}",numOfTorrents));
+            Connect();
         }
 
         #endregion
 
-        public void Connect(out int numTorrents)
+        public void Connect()
         {
                 var url = new Uri("http://" + LocalSettings.Hostname + ":" + LocalSettings.Port + "/transmission/rpc");
                 var client = new TransmissionClient(url);
@@ -186,9 +188,9 @@ namespace mptransmission
                 string[] torrentSeeds = new string[100];
                 JsonObject session = (JsonObject)client.Invoke("session-stats", null);
                 JsonNumber num = (JsonNumber)session["activeTorrentCount"];
-                numTorrents = (int)num;
+                int numTorrents = (int)num;
                 JsonNumber download = (JsonNumber)session["downloadSpeed"];
-                int downSpeed = (int)download / 1024;
+                int downSpeed = (int)download;
                 JsonNumber upload = (JsonNumber)session["uploadSpeed"];
                 int upSpeed = (int)upload;
                 var torrent = (IDictionary)client.Invoke("torrent-get", new { fields = new[] { "name", "percentDone", "sizeWhenDone", "peersConnected", "peersGettingFromUs", "peersSendingToUs" } }, null);
@@ -200,11 +202,10 @@ namespace mptransmission
                         torrentNames[i] = (string)torrents["name"];
                         JsonNumber percent = (JsonNumber)torrents["percentDone"];
                         double tempPercent = (double)percent;
-                        torrentPercent[i] = tempPercent.ToString("0.00%");
+                        torrentPercent[i] = tempPercent.ToString();
                         JsonNumber size = (JsonNumber)torrents["sizeWhenDone"];
                         double tempSize = (double)size;
-                        tempSize = tempSize / 1048576;
-                        torrentSize[i] = tempSize.ToString("0.00MB");
+                        torrentSize[i] = tempSize.ToString();
                         JsonNumber peers = (JsonNumber)torrents["peersConnected"];
                         double tempPeers = (double)peers;
                         torrentPeers[i] = tempPeers.ToString();
@@ -217,6 +218,9 @@ namespace mptransmission
                         i++;
                     }
                 }
+            GUIPropertyManager.SetProperty("#numDownloads", numTorrents.ToString("0"));
+            GUIPropertyManager.SetProperty("#uploadSpeedTotal", UnitConvert.TransferSpeedToString(upSpeed));
+            GUIPropertyManager.SetProperty("#downloadSpeedTotal", UnitConvert.TransferSpeedToString(downSpeed));
         }
 
         public class TransmissionClient
