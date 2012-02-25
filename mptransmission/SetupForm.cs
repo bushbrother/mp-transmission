@@ -182,6 +182,10 @@ namespace mptransmission
                 {
                     try
                     {
+                        if (LocalSettings.Authentication == true)
+                        {
+                            wc.Credentials = new NetworkCredential(LocalSettings.Username, LocalSettings.Password);
+                        }
                         if (!string.IsNullOrEmpty(sessionId))
                             wc.Headers.Add("X-Transmission-Session-Id", sessionId);
                         var requestJson = JsonConvert.ExportToString(request);
