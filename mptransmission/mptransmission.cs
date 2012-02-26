@@ -36,7 +36,7 @@ namespace mptransmission
     [PluginIcons("mptransmission.Icon.png", "mptransmission.Icon_Disabled.png")]
     public class mptransmission : GUIWindow, ISetupForm
     {
-        [SkinControlAttribute(5)] protected GUIListControl torrentList = null;
+        [SkinControlAttribute(5)] public GUIListControl torrentList = null;
 
         public mptransmission()
         {
@@ -158,8 +158,12 @@ namespace mptransmission
             GUIPropertyManager.SetProperty("#numPausedDownloads", "0");
             GUIPropertyManager.SetProperty("#uploadSpeedTotal", UnitConvert.TransferSpeedToString(0));
             GUIPropertyManager.SetProperty("#downloadSpeedTotal", UnitConvert.TransferSpeedToString(0));
-            activeTorrents();
             return Load(GUIGraphicsContext.Skin+@"\mptransmission.xml");
+        }
+
+        protected override void OnPageLoad()
+        {
+            activeTorrents();
         }
 
         private void activeTorrents()
@@ -230,7 +234,7 @@ namespace mptransmission
                         torrentNames[i] = (string)torrents["name"];
                         JsonNumber percent = (JsonNumber)torrents["percentDone"];
                         double tempPercent = (double)percent;
-                        torrentPercent[i] = tempPercent.ToString();
+                        torrentPercent[i] = tempPercent.ToString("0.00%");
                         JsonNumber size = (JsonNumber)torrents["sizeWhenDone"];
                         double tempSize = (double)size;
                         torrentSize[i] = tempSize.ToString();
@@ -254,9 +258,24 @@ namespace mptransmission
             GUIPropertyManager.SetProperty("#uploadSpeedTotal", UnitConvert.TransferSpeedToString(upSpeed));
             GUIPropertyManager.SetProperty("#downloadSpeedTotal", UnitConvert.TransferSpeedToString(downSpeed));
 
-            //GUIListItem item = new GUIListItem(string.Format("{0} ({1:F2}%)", torrentNames[i], torrentPercent[i]));
-            //torrentList.Add(item);
+            PopulateList(torrentNames, torrentPercent, numTorrents, pausedTorrents);
+            
         }
+
+        private void PopulateList(string[] names, string[] percent, int active, int paused)
+        {
+            torrentList.Clear();
+            var i = 0;
+            while (i < (active+paused))
+            {
+                GUIListItem item = new GUIListItem();
+                item.Label = names[i];
+                item.Label2 = percent[i];
+                torrentList.Add(item);
+                i++;
+            }
+        }
+
 
         public class TransmissionClient
         {
