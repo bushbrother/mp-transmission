@@ -37,6 +37,7 @@ namespace mptransmission
     public class mptransmission : GUIWindow, ISetupForm
     {
         [SkinControlAttribute(5)] public GUIListControl torrentList = null;
+        System.Timers.Timer aTimer = new System.Timers.Timer();
 
         public mptransmission()
         {
@@ -168,9 +169,12 @@ namespace mptransmission
 
         private void activeTorrents()
         {
-            System.Timers.Timer aTimer = new System.Timers.Timer();
             aTimer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
             // Set the Interval to settings value.
+            if (LocalSettings.refreshRate == null)
+            {
+                aTimer.Interval = 5000;
+            }
             if (LocalSettings.refreshRate == "5 Seconds")
             {
                 aTimer.Interval = 5000;
@@ -195,8 +199,9 @@ namespace mptransmission
             {
                 aTimer.Interval = 30000;
             }
-            aTimer.Enabled = true;
-        }
+                aTimer.Start();
+            }
+
 
         private void OnTimedEvent(object source, ElapsedEventArgs e)
         {
@@ -248,8 +253,8 @@ namespace mptransmission
                         double tempSeeds = (double)seeds;
                         torrentSeeds[i] = tempSeeds.ToString();
                         JsonNumber eta = (JsonNumber)torrents["eta"];
-                        double tempEta = (double)eta;
-                        torrentEta[i] = tempEta.ToString();
+                        long tempEta = (long)eta;
+                        torrentEta[i] = UnitConvert.TimeRemainingToString(tempEta).ToString();
                         i++;
                     }
                 }
@@ -258,24 +263,86 @@ namespace mptransmission
             GUIPropertyManager.SetProperty("#uploadSpeedTotal", UnitConvert.TransferSpeedToString(upSpeed));
             GUIPropertyManager.SetProperty("#downloadSpeedTotal", UnitConvert.TransferSpeedToString(downSpeed));
 
-            PopulateList(torrentNames, torrentPercent, numTorrents, pausedTorrents);
-            
+            if (torrentList.ListItems.Count == 0)
+            {
+                PopulateList(torrentNames, torrentPercent, numTorrents, pausedTorrents, torrentEta, torrentPeers, torrentLeechers, torrentSeeds);
+            }
+            if (torrentList.ListItems.Count < (numTorrents + pausedTorrents))
+            {
+                rePopulateList(torrentNames, torrentPercent, numTorrents, pausedTorrents, torrentEta, torrentPeers, torrentLeechers, torrentSeeds);
+            }
+            if (torrentList.ListItems.Count > (numTorrents + pausedTorrents))
+            {
+                rePopulateList(torrentNames, torrentPercent, numTorrents, pausedTorrents, torrentEta, torrentPeers, torrentLeechers, torrentSeeds);
+                PopulateList(torrentNames, torrentPercent, numTorrents, pausedTorrents, torrentEta, torrentPeers, torrentLeechers, torrentSeeds);
+            }
+            else
+            {
+                updateList(torrentNames, torrentPercent, numTorrents, pausedTorrents);
+            }
         }
 
-        private void PopulateList(string[] names, string[] percent, int active, int paused)
+        private void PopulateList(string[] names, string[] percent, int active, int paused, string[] eta, string[] peers, string[] leechers, string[] seeds)
         {
             torrentList.Clear();
-            var i = 0;
+            int i = 0;
             while (i < (active+paused))
             {
                 GUIListItem item = new GUIListItem();
                 item.Label = names[i];
                 item.Label2 = percent[i];
+                //item.Label3 = eta[i];
+                //string temp = string.Format("{0}({1}) - {2}",peers[i],seeds[i],leechers[i]);
+                //item.Label3 = temp;
                 torrentList.Add(item);
                 i++;
             }
         }
 
+        private void updateList(string[] names, string[] percent, int active, int paused)
+        {
+            int i = 0;
+            while (i < (active + paused))
+            {
+                torrentList.ListItems[i].Label = names[i];
+                torrentList.ListItems[i].Label2 = percent[i];
+                i++;
+            }
+        }
+
+        protected override void OnPageDestroy(int newWindowId)
+        {
+            base.OnPageDestroy(newWindowId);
+            aTimer.Elapsed -= new ElapsedEventHandler(OnTimedEvent);
+            aTimer.Stop();
+        }
+
+        private void rePopulateList(string[] names, string[] percent, int active, int paused, string[] eta, string[] peers, string[] leechers, string[] seeds)
+        {
+            int i = torrentList.ListItems.Count;
+            if (i < (active + paused))
+            {
+                while (i < (active + paused))
+                {
+                    GUIListItem item = new GUIListItem();
+                    item.Label = names[i];
+                    item.Label2 = percent[i];
+                    //item.Label3 = eta[i];
+                    //string temp = string.Format("{0}({1}) - {2}",peers[i],seeds[i],leechers[i]);
+                    //item.Label3 = temp;
+                    torrentList.Add(item);
+                    i++;
+                }
+            }
+            if (i > (active + paused))
+            {
+                while (i > (active + paused))
+                {
+                    torrentList.Clear();
+                    i--;
+                }
+            }
+        }
 
         public class TransmissionClient
         {
