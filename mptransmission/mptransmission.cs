@@ -262,6 +262,7 @@ namespace mptransmission
             GUIPropertyManager.SetProperty("#numPausedDownloads", pausedTorrents.ToString("0"));
             GUIPropertyManager.SetProperty("#uploadSpeedTotal", UnitConvert.TransferSpeedToString(upSpeed));
             GUIPropertyManager.SetProperty("#downloadSpeedTotal", UnitConvert.TransferSpeedToString(downSpeed));
+            
 
             if (torrentList.ListItems.Count == 0)
             {
@@ -291,9 +292,9 @@ namespace mptransmission
                 GUIListItem item = new GUIListItem();
                 item.Label = names[i];
                 item.Label2 = percent[i];
-                //item.Label3 = eta[i];
-                //string temp = string.Format("{0}({1}) - {2}",peers[i],seeds[i],leechers[i]);
-                //item.Label3 = temp;
+                item.Label3 = eta[i];
+                string temp = string.Format("S-{0}({1}) ~ L-{2}",peers[i],seeds[i],leechers[i]);
+                item.Label3 = temp;
                 torrentList.Add(item);
                 i++;
             }
