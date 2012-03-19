@@ -1,6 +1,6 @@
 <window>
   <id>56345</id>
-  <defaultcontrol>0</defaultcontrol>
+  <defaultcontrol>5</defaultcontrol>
   <allowoverlay>yes</allowoverlay>
   <disabletopbar>no</disabletopbar>
   <define>#header.label:mp-transmission</define>
@@ -88,6 +88,7 @@
       <animation effect="slide" start="0,0" end="-514,0" tween="quadratic" time="300" delay="0">WindowClose</animation>
       <animation effect="fade" time="150">WindowClose</animation>
     </control>
+    <import>mptransmission.sideMenu.xml</import>
     <import>common.time.xml</import>
     <control>
       <description>text label</description>

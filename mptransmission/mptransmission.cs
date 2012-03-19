@@ -37,11 +37,12 @@ namespace mptransmission
     public class mptransmission : GUIWindow, ISetupForm
     {
         [SkinControlAttribute(5)] public GUIListControl torrentList = null;
-        System.Timers.Timer aTimer = new System.Timers.Timer();
+
+        internal static System.Timers.Timer aTimer = new System.Timers.Timer();
 
         public mptransmission()
         {
-            
+
         }
 
         #region Constants
@@ -155,6 +156,7 @@ namespace mptransmission
         public override bool Init()
         {
             LocalSettings.Load();
+            aTimer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
             GUIPropertyManager.SetProperty("#numDownloads", "0");
             GUIPropertyManager.SetProperty("#numPausedDownloads", "0");
             GUIPropertyManager.SetProperty("#uploadSpeedTotal", UnitConvert.TransferSpeedToString(0));
@@ -169,7 +171,6 @@ namespace mptransmission
 
         private void activeTorrents()
         {
-            aTimer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
             // Set the Interval to settings value.
             if (LocalSettings.refreshRate == null)
             {
@@ -200,10 +201,10 @@ namespace mptransmission
                 aTimer.Interval = 30000;
             }
                 aTimer.Start();
-            }
+        }
 
 
-        private void OnTimedEvent(object source, ElapsedEventArgs e)
+        public void OnTimedEvent(object source, ElapsedEventArgs e)
         {
             Connect();
         }
@@ -214,99 +215,118 @@ namespace mptransmission
         {
                 var url = new Uri("http://" + LocalSettings.Hostname + ":" + LocalSettings.Port + "/transmission/rpc");
                 var client = new TransmissionClient(url);
-                string[] torrentNames = new string[100];
-                string[] torrentPercent = new string[100];
-                string[] torrentSize = new string[100];
-                string[] torrentPeers = new string[100];
-                string[] torrentLeechers = new string[100];
-                string[] torrentSeeds = new string[100];
-                string[] torrentEta = new string[100];
                 JsonObject session = (JsonObject)client.Invoke("session-stats", null);
                 JsonNumber num = (JsonNumber)session["activeTorrentCount"];
-                int numTorrents = (int)num;
+                variables.activeTorrents = (int)num;
                 JsonNumber numPaused = (JsonNumber)session["pausedTorrentCount"];
-                int pausedTorrents = (int)numPaused;
+                variables.pausedTorrents = (int)numPaused;
                 JsonNumber download = (JsonNumber)session["downloadSpeed"];
                 int downSpeed = (int)download;
                 JsonNumber upload = (JsonNumber)session["uploadSpeed"];
                 int upSpeed = (int)upload;
-                var torrent = (IDictionary)client.Invoke("torrent-get", new { fields = new[] { "name", "percentDone", "sizeWhenDone", "peersConnected", "peersGettingFromUs", "peersSendingToUs", "eta" } }, null);
+                var torrent = (IDictionary)client.Invoke("torrent-get", new { fields = new[] { "name", "percentDone", "sizeWhenDone", "peersConnected", "peersGettingFromUs", "peersSendingToUs", "eta", "rateDownload", "rateUpload"} }, null);
                 var i = 0;
                 foreach (IDictionary torrents in (IList)torrent["torrents"])
                 {
-                    if (i < numTorrents)
+                    if (i < variables.activeTorrents)
                     {
-                        torrentNames[i] = (string)torrents["name"];
+                        variables.torrentName[i] = (string)torrents["name"];
                         JsonNumber percent = (JsonNumber)torrents["percentDone"];
                         double tempPercent = (double)percent;
-                        torrentPercent[i] = tempPercent.ToString("0.00%");
+                        variables.torrentProgress[i] = tempPercent.ToString("0.00%");
                         JsonNumber size = (JsonNumber)torrents["sizeWhenDone"];
-                        double tempSize = (double)size;
-                        torrentSize[i] = tempSize.ToString();
+                        long tempSize = (long)size;
+                        variables.torrentSize[i] = UnitConvert.SizeToString(tempSize);
                         JsonNumber peers = (JsonNumber)torrents["peersConnected"];
                         double tempPeers = (double)peers;
-                        torrentPeers[i] = tempPeers.ToString();
+                        variables.torrentPeersConnected[i] = tempPeers.ToString();
                         JsonNumber leechers = (JsonNumber)torrents["peersGettingFromUs"];
                         double tempLeechers = (double)leechers;
-                        torrentLeechers[i] = tempLeechers.ToString();
+                        variables.torrentPeers[i] = tempLeechers.ToString();
                         JsonNumber seeds = (JsonNumber)torrents["peersSendingToUs"];
                         double tempSeeds = (double)seeds;
-                        torrentSeeds[i] = tempSeeds.ToString();
+                        variables.torrentSeeds[i] = tempSeeds.ToString();
                         JsonNumber eta = (JsonNumber)torrents["eta"];
                         long tempEta = (long)eta;
-                        torrentEta[i] = UnitConvert.TimeRemainingToString(tempEta).ToString();
+                        variables.torrentETA[i] = UnitConvert.TimeRemainingToString(tempEta);
+                        JsonNumber down = (JsonNumber)torrents["rateDownload"];
+                        long tempDown = (long)down;
+                        variables.torrentDown[i] = UnitConvert.TransferSpeedToString(tempDown);
+                        JsonNumber up = (JsonNumber)torrents["rateUpload"];
+                        long tempUp = (long)up;
+                        variables.torrentUp[i] = UnitConvert.TransferSpeedToString(tempUp);
                         i++;
                     }
                 }
-            GUIPropertyManager.SetProperty("#numDownloads", numTorrents.ToString("0"));
-            GUIPropertyManager.SetProperty("#numPausedDownloads", pausedTorrents.ToString("0"));
+            GUIPropertyManager.SetProperty("#numDownloads", variables.activeTorrents.ToString("0"));
+            GUIPropertyManager.SetProperty("#numPausedDownloads", variables.pausedTorrents.ToString("0"));
             GUIPropertyManager.SetProperty("#uploadSpeedTotal", UnitConvert.TransferSpeedToString(upSpeed));
             GUIPropertyManager.SetProperty("#downloadSpeedTotal", UnitConvert.TransferSpeedToString(downSpeed));
-            
+            GUIPropertyManager.SetProperty("#mptransmission.Details.Name", variables.torrentName[variables.selTorrent]);
+            GUIPropertyManager.SetProperty("#mptransmission.Details.ETA", variables.torrentETA[variables.selTorrent]);
+            GUIPropertyManager.SetProperty("#mptransmission.Details.DownloadSpeed", variables.torrentDown[variables.selTorrent]);
+            GUIPropertyManager.SetProperty("#mptransmission.Details.UploadSpeed", variables.torrentUp[variables.selTorrent]);
+            GUIPropertyManager.SetProperty("#mptransmission.Details.Size", variables.torrentSize[variables.selTorrent]);
+            GUIPropertyManager.SetProperty("#mptransmission.Details.Peers", variables.torrentPeers[variables.selTorrent]);
+            GUIPropertyManager.SetProperty("#mptransmission.Details.Seeds", variables.torrentSeeds[variables.selTorrent]);
+            GUIPropertyManager.SetProperty("#mptransmission.Details.Progress", variables.torrentProgress[variables.selTorrent]);
+
+            //variables.listSize = torrentList.ListItems.Count;
 
             if (torrentList.ListItems.Count == 0)
             {
-                PopulateList(torrentNames, torrentPercent, numTorrents, pausedTorrents, torrentEta, torrentPeers, torrentLeechers, torrentSeeds);
+                PopulateList();
             }
-            if (torrentList.ListItems.Count < (numTorrents + pausedTorrents))
+            if (torrentList.ListItems.Count < (variables.activeTorrents + variables.pausedTorrents))
             {
-                rePopulateList(torrentNames, torrentPercent, numTorrents, pausedTorrents, torrentEta, torrentPeers, torrentLeechers, torrentSeeds);
+                rePopulateList();
             }
-            if (torrentList.ListItems.Count > (numTorrents + pausedTorrents))
+            if (torrentList.ListItems.Count > (variables.activeTorrents + variables.pausedTorrents))
             {
-                rePopulateList(torrentNames, torrentPercent, numTorrents, pausedTorrents, torrentEta, torrentPeers, torrentLeechers, torrentSeeds);
-                PopulateList(torrentNames, torrentPercent, numTorrents, pausedTorrents, torrentEta, torrentPeers, torrentLeechers, torrentSeeds);
+                rePopulateList();
+                PopulateList();
             }
             else
             {
-                updateList(torrentNames, torrentPercent, numTorrents, pausedTorrents);
+                updateList();
             }
         }
 
-        private void PopulateList(string[] names, string[] percent, int active, int paused, string[] eta, string[] peers, string[] leechers, string[] seeds)
+        
+        private void PopulateList()    
         {
-            torrentList.Clear();
-            int i = 0;
-            while (i < (active+paused))
+        torrentList.Clear();
+        int i = 0;
+        if (torrentList.ListItems.Count == 0)
             {
                 GUIListItem item = new GUIListItem();
-                item.Label = names[i];
-                item.Label2 = percent[i];
-                item.Label3 = eta[i];
-                string temp = string.Format("S-{0}({1}) ~ L-{2}",peers[i],seeds[i],leechers[i]);
-                item.Label3 = temp;
+                item.Label = "No Torrents :'(";
                 torrentList.Add(item);
-                i++;
+            }
+            else
+            {
+                while (i < (variables.activeTorrents + variables.pausedTorrents))
+                {
+                    GUIListItem item = new GUIListItem();
+                    item.Label = variables.torrentName[i];
+                    item.Label2 = variables.torrentProgress[i];
+                    string temp = string.Format("S-{0}({1}) ~ L-{2}", variables.torrentPeersConnected[i], variables.torrentSeeds[i], variables.torrentPeers[i]);
+                    item.Label3 = temp;
+                    torrentList.Add(item);
+                    i++;
+                }
             }
         }
 
-        private void updateList(string[] names, string[] percent, int active, int paused)
+        private void updateList()    
         {
             int i = 0;
-            while (i < (active + paused))
+            while (i < (variables.activeTorrents + variables.pausedTorrents))
             {
-                torrentList.ListItems[i].Label = names[i];
-                torrentList.ListItems[i].Label2 = percent[i];
+                torrentList.ListItems[i].Label = variables.torrentName[i];
+                torrentList.ListItems[i].Label2 = variables.torrentProgress[i];
+                string temp = string.Format("S-{0}({1}) ~ L-{2}", variables.torrentPeersConnected[i], variables.torrentSeeds[i], variables.torrentPeers[i]);
+                torrentList.ListItems[i].Label3 = temp;
                 i++;
             }
         }
@@ -314,34 +334,116 @@ namespace mptransmission
         protected override void OnPageDestroy(int newWindowId)
         {
             base.OnPageDestroy(newWindowId);
-            aTimer.Elapsed -= new ElapsedEventHandler(OnTimedEvent);
+            //aTimer.Elapsed -= new ElapsedEventHandler(OnTimedEvent);
             aTimer.Stop();
         }
 
-        private void rePopulateList(string[] names, string[] percent, int active, int paused, string[] eta, string[] peers, string[] leechers, string[] seeds)
+        private void rePopulateList()
         {
             int i = torrentList.ListItems.Count;
-            if (i < (active + paused))
+            if (i < (variables.activeTorrents + variables.pausedTorrents))
             {
-                while (i < (active + paused))
+                while (i < (variables.activeTorrents + variables.pausedTorrents))
                 {
                     GUIListItem item = new GUIListItem();
-                    item.Label = names[i];
-                    item.Label2 = percent[i];
-                    //item.Label3 = eta[i];
-                    //string temp = string.Format("{0}({1}) - {2}",peers[i],seeds[i],leechers[i]);
-                    //item.Label3 = temp;
+                    item.Label = variables.torrentName[i];
+                    item.Label2 = variables.torrentProgress[i];
+                    string temp = string.Format("S-{0}({1}) ~ L-{2}", variables.torrentPeersConnected[i], variables.torrentSeeds[i], variables.torrentPeers[i]);
+                    item.Label3 = temp;
                     torrentList.Add(item);
                     i++;
                 }
             }
-            if (i > (active + paused))
+            if (i > (variables.activeTorrents + variables.pausedTorrents))
             {
-                while (i > (active + paused))
+                while (i > (variables.activeTorrents + variables.pausedTorrents))
                 {
                     torrentList.Clear();
                     i--;
                 }
+            }
+        }
+
+        protected override void OnClicked(int controlId, GUIControl control, MediaPortal.GUI.Library.Action.ActionType actionType)
+        {
+            variables.selTorrent = torrentList.SelectedListItemIndex;
+            if (torrentList.SelectedListItem.Label == "No Torrents :'(")
+            {
+            }
+            else
+            {
+                GUIWindowManager.ActivateWindow(56348);
+            }
+        }
+
+        protected override void OnShowContextMenu()
+        {
+            GUIDialogMenu dlg = (GUIDialogMenu)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_DIALOG_MENU);
+            if (dlg == null)
+            {
+                return;
+            }
+
+            dlg.Reset();
+            dlg.SetHeading("Torrent Options");
+            dlg.Add("Stop");
+            dlg.Add("Start");
+            dlg.Add("Resume");
+            dlg.Add("Pause");
+            dlg.Add("Remove");
+            dlg.Add("Details");
+            dlg.DoModal(GUIWindowManager.ActiveWindow);
+
+            switch (dlg.SelectedLabelText)
+            {
+                case "Start":
+                    {
+                        break;
+                    };
+                case "Stop":
+                    {
+                        break;
+                    };
+                case "Resume":
+                    {
+                        break;
+                    };
+                case "Pause":
+                    {
+                        break;
+                    };
+                case "Details":
+                    {
+                        variables.selTorrent = torrentList.SelectedListItemIndex;
+                        if (torrentList.SelectedListItem.Label == "No Torrents :'(")
+                        {
+                        }
+                        else
+                        {
+                            GUIWindowManager.ActivateWindow(56348);
+                        }
+                        break;
+                    };
+                case "Remove":
+                    {
+                        GUIDialogYesNo ask = (GUIDialogYesNo)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_DIALOG_YES_NO);
+                        ask.Reset();
+                        ask.SetHeading("Remove downloaded files?");
+                        ask.SetLine(1, "Files will be removed permanently.");
+                        ask.SetLine(2, "This cannot be undone!");
+                        ask.SetDefaultToYes(false);
+                        ask.DoModal(GUIWindowManager.ActiveWindow);
+
+                        if (ask.IsConfirmed)
+                        {
+
+                        }
+                        else
+                        {
+
+                        }
+                        break;
+                    };
             }
         }
 

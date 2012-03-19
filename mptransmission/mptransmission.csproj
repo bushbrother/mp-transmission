@@ -62,6 +62,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="torrentDetails.cs" />
     <Compile Include="LocalSettings.cs" />
     <Compile Include="mptransmission.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -77,6 +78,7 @@
       <DependentUpon>SetupForm.cs</DependentUpon>
     </Compile>
     <Compile Include="UnitConvert.cs" />
+    <Compile Include="variables.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Icon.png" />
@@ -94,6 +96,14 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <SubType>Designer</SubType>
     </Resource>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="mptransmission.Details.xml">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="mptransmission.sideMenu.xml">
+      <SubType>Designer</SubType>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
