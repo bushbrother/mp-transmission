@@ -1,0 +1,170 @@
+﻿<window>
+  <id>56348</id>
+  <defaultcontrol>0</defaultcontrol>
+  <allowoverlay>yes</allowoverlay>
+  <define>#header.label:details</define>
+  <controls>
+    <import>common.time.xml</import>
+    <import>mptransmission.sideMenu.xml</import>
+    <control>
+      <description>text label</description>
+      <type>label</type>
+      <id>1</id>
+      <posX>250</posX>
+      <posY>250</posY>
+      <label>Name: </label>
+      <align>right</align>
+      <textcolor>ffffffff</textcolor>
+    </control>
+    <control>
+      <description>text label</description>
+      <type>label</type>
+      <id>1</id>
+      <posX>290</posX>
+      <posY>250</posY>
+      <label>#mptransmission.Details.Name</label>
+      <align>left</align>
+      <textcolor>ffffffff</textcolor>
+    </control>
+    <control>
+      <description>text label</description>
+      <type>label</type>
+      <id>1</id>
+      <posX>250</posX>
+      <posY>280</posY>
+      <label>ETA: </label>
+      <align>right</align>
+      <textcolor>ffffffff</textcolor>
+    </control>
+    <control>
+      <description>text label</description>
+      <type>label</type>
+      <id>1</id>
+      <posX>290</posX>
+      <posY>280</posY>
+      <label>#mptransmission.Details.ETA</label>
+      <align>left</align>
+      <textcolor>ffffffff</textcolor>
+    </control>
+    <control>
+      <description>text label</description>
+      <type>label</type>
+      <id>1</id>
+      <posX>250</posX>
+      <posY>310</posY>
+      <label>Download Speed: </label>
+      <align>right</align>
+      <textcolor>ffffffff</textcolor>
+    </control>
+    <control>
+      <description>text label</description>
+      <type>label</type>
+      <id>1</id>
+      <posX>290</posX>
+      <posY>310</posY>
+      <label>#mptransmission.Details.DownloadSpeed</label>
+      <align>left</align>
+      <textcolor>ffffffff</textcolor>
+    </control>
+    <control>
+      <description>text label</description>
+      <type>label</type>
+      <id>1</id>
+      <posX>250</posX>
+      <posY>340</posY>
+      <label>Upload Speed: </label>
+      <align>right</align>
+      <textcolor>ffffffff</textcolor>
+    </control>
+    <control>
+      <description>text label</description>
+      <type>label</type>
+      <id>1</id>
+      <posX>290</posX>
+      <posY>340</posY>
+      <label>#mptransmission.Details.UploadSpeed</label>
+      <align>left</align>
+      <textcolor>ffffffff</textcolor>
+    </control>
+    <control>
+      <description>text label</description>
+      <type>label</type>
+      <id>1</id>
+      <posX>250</posX>
+      <posY>370</posY>
+      <label>Size: </label>
+      <align>right</align>
+      <textcolor>ffffffff</textcolor>
+    </control>
+    <control>
+      <description>text label</description>
+      <type>label</type>
+      <id>1</id>
+      <posX>290</posX>
+      <posY>370</posY>
+      <label>#mptransmission.Details.Size</label>
+      <align>left</align>
+      <textcolor>ffffffff</textcolor>
+    </control>
+    <control>
+      <description>text label</description>
+      <type>label</type>
+      <id>1</id>
+      <posX>250</posX>
+      <posY>400</posY>
+      <label>Peers: </label>
+      <align>right</align>
+      <textcolor>ffffffff</textcolor>
+    </control>
+    <control>
+      <description>text label</description>
+      <type>label</type>
+      <id>1</id>
+      <posX>290</posX>
+      <posY>400</posY>
+      <label>#mptransmission.Details.Peers</label>
+      <align>left</align>
+      <textcolor>ffffffff</textcolor>
+    </control>
+    <control>
+      <description>text label</description>
+      <type>label</type>
+      <id>1</id>
+      <posX>250</posX>
+      <posY>430</posY>
+      <label>Seeds: </label>
+      <align>right</align>
+      <textcolor>ffffffff</textcolor>
+    </control>
+    <control>
+      <description>text label</description>
+      <type>label</type>
+      <id>1</id>
+      <posX>290</posX>
+      <posY>430</posY>
+      <label>#mptransmission.Details.Seeds</label>
+      <align>left</align>
+      <textcolor>ffffffff</textcolor>
+    </control>
+    <control>
+      <description>text label</description>
+      <type>label</type>
+      <id>1</id>
+      <posX>250</posX>
+      <posY>460</posY>
+      <label>Progress: </label>
+      <align>right</align>
+      <textcolor>ffffffff</textcolor>
+    </control>
+    <control>
+      <description>text label</description>
+      <type>label</type>
+      <id>1</id>
+      <posX>290</posX>
+      <posY>460</posY>
+      <label>#mptransmission.Details.Progress</label>
+      <align>left</align>
+      <textcolor>ffffffff</textcolor>
+    </control>
+  </controls>
+</window>
