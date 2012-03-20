@@ -98,6 +98,7 @@
     </Resource>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="hover_mptransmission.jpg" />
     <Content Include="mptransmission.Details.xml">
       <SubType>Designer</SubType>
     </Content>

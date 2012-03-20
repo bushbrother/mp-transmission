@@ -221,10 +221,10 @@ namespace mptransmission
                 JsonNumber numPaused = (JsonNumber)session["pausedTorrentCount"];
                 variables.pausedTorrents = (int)numPaused;
                 JsonNumber download = (JsonNumber)session["downloadSpeed"];
-                int downSpeed = (int)download;
+                variables.totalDownload = (int)download;
                 JsonNumber upload = (JsonNumber)session["uploadSpeed"];
-                int upSpeed = (int)upload;
-                var torrent = (IDictionary)client.Invoke("torrent-get", new { fields = new[] { "name", "percentDone", "sizeWhenDone", "peersConnected", "peersGettingFromUs", "peersSendingToUs", "eta", "rateDownload", "rateUpload"} }, null);
+                variables.totalUpload = (int)upload;
+                var torrent = (IDictionary)client.Invoke("torrent-get", new { fields = new[] { "name", "percentDone", "sizeWhenDone", "peersConnected", "peersGettingFromUs", "peersSendingToUs", "eta", "rateDownload", "rateUpload", "id"} }, null);
                 var i = 0;
                 foreach (IDictionary torrents in (IList)torrent["torrents"])
                 {
@@ -255,21 +255,31 @@ namespace mptransmission
                         JsonNumber up = (JsonNumber)torrents["rateUpload"];
                         long tempUp = (long)up;
                         variables.torrentUp[i] = UnitConvert.TransferSpeedToString(tempUp);
+                        JsonNumber torrentID = (JsonNumber)torrents["id"];
+                        variables.torrentID[i] = (int)torrentID;
                         i++;
                     }
                 }
             GUIPropertyManager.SetProperty("#numDownloads", variables.activeTorrents.ToString("0"));
             GUIPropertyManager.SetProperty("#numPausedDownloads", variables.pausedTorrents.ToString("0"));
-            GUIPropertyManager.SetProperty("#uploadSpeedTotal", UnitConvert.TransferSpeedToString(upSpeed));
-            GUIPropertyManager.SetProperty("#downloadSpeedTotal", UnitConvert.TransferSpeedToString(downSpeed));
+            GUIPropertyManager.SetProperty("#uploadSpeedTotal", UnitConvert.TransferSpeedToString(variables.totalUpload));
+            GUIPropertyManager.SetProperty("#downloadSpeedTotal", UnitConvert.TransferSpeedToString(variables.totalDownload));
             GUIPropertyManager.SetProperty("#mptransmission.Details.Name", variables.torrentName[variables.selTorrent]);
-            GUIPropertyManager.SetProperty("#mptransmission.Details.ETA", variables.torrentETA[variables.selTorrent]);
             GUIPropertyManager.SetProperty("#mptransmission.Details.DownloadSpeed", variables.torrentDown[variables.selTorrent]);
             GUIPropertyManager.SetProperty("#mptransmission.Details.UploadSpeed", variables.torrentUp[variables.selTorrent]);
             GUIPropertyManager.SetProperty("#mptransmission.Details.Size", variables.torrentSize[variables.selTorrent]);
             GUIPropertyManager.SetProperty("#mptransmission.Details.Peers", variables.torrentPeers[variables.selTorrent]);
             GUIPropertyManager.SetProperty("#mptransmission.Details.Seeds", variables.torrentSeeds[variables.selTorrent]);
             GUIPropertyManager.SetProperty("#mptransmission.Details.Progress", variables.torrentProgress[variables.selTorrent]);
+
+            if (variables.torrentETA[variables.selTorrent] == "-1s")
+            {
+                GUIPropertyManager.SetProperty("#mptransmission.Details.ETA", "Completed - Seeding");
+            }
+            else
+            {
+                GUIPropertyManager.SetProperty("#mptransmission.Details.ETA", variables.torrentETA[variables.selTorrent]);
+            }
 
             //variables.listSize = torrentList.ListItems.Count;
 
@@ -292,6 +302,34 @@ namespace mptransmission
             }
         }
 
+        public static void pauseTorrent(int pauseID)
+        {
+            var url = new Uri("http://" + LocalSettings.Hostname + ":" + LocalSettings.Port + "/transmission/rpc");
+            var client = new TransmissionClient(url);
+            int[] fields = new[] { pauseID };
+            client.Invoke("torrent-stop", fields, null);
+        }
+
+        public static void startTorrent(int startID)
+        {
+            var url = new Uri("http://" + LocalSettings.Hostname + ":" + LocalSettings.Port + "/transmission/rpc");
+            var client = new TransmissionClient(url);
+            client.Invoke("torrent-start", new { fields = new[] { startID } }, null);
+        }
+
+        public static void removeTorrent(int removeID)
+        {
+            var url = new Uri("http://" + LocalSettings.Hostname + ":" + LocalSettings.Port + "/transmission/rpc");
+            var client = new TransmissionClient(url);
+            client.Invoke("torrent-remove", new { fields = new[] { removeID } }, null);
+        }
+
+        public static void removeTorrentandFiles(int removeID)
+        {
+            var url = new Uri("http://" + LocalSettings.Hostname + ":" + LocalSettings.Port + "/transmission/rpc");
+            var client = new TransmissionClient(url);
+            client.Invoke("torrent-remove", removeID, null);
+        }
         
         private void PopulateList()    
         {
@@ -372,6 +410,7 @@ namespace mptransmission
             }
             else
             {
+                Connect();
                 GUIWindowManager.ActivateWindow(56348);
             }
         }
@@ -386,10 +425,8 @@ namespace mptransmission
 
             dlg.Reset();
             dlg.SetHeading("Torrent Options");
-            dlg.Add("Stop");
             dlg.Add("Start");
-            dlg.Add("Resume");
-            dlg.Add("Pause");
+            dlg.Add("Stop");
             dlg.Add("Remove");
             dlg.Add("Details");
             dlg.DoModal(GUIWindowManager.ActiveWindow);
@@ -398,18 +435,14 @@ namespace mptransmission
             {
                 case "Start":
                     {
+                        int selected = variables.torrentID[variables.selTorrent];
+                        startTorrent(selected);
                         break;
                     };
                 case "Stop":
                     {
-                        break;
-                    };
-                case "Resume":
-                    {
-                        break;
-                    };
-                case "Pause":
-                    {
+                        int selected = variables.torrentID[variables.selTorrent];
+                        pauseTorrent(selected);
                         break;
                     };
                 case "Details":
@@ -420,6 +453,7 @@ namespace mptransmission
                         }
                         else
                         {
+                            Connect();
                             GUIWindowManager.ActivateWindow(56348);
                         }
                         break;

@@ -3,8 +3,7 @@
   <defaultcontrol>5</defaultcontrol>
   <allowoverlay>yes</allowoverlay>
   <disabletopbar>no</disabletopbar>
-  <define>#header.label:mp-transmission</define>
-  <define>#header.hover:hover_my tv.png</define>
+  <define>#header.hover:hover_mptransmission.jpg</define>
   <controls>
     <control>
           <description>Background Image</description>

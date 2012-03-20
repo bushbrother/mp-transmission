@@ -21,5 +21,8 @@ namespace mptransmission
         public static string[] torrentPeersConnected = new string[100];
         public static string[] torrentSeeds = new string[100];
         public static string[] torrentProgress = new string[100];
+        public static int[] torrentID = new int[100];
+        public static int totalUpload = 0;
+        public static int totalDownload = 0;
     }
 }
