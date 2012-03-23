@@ -9,7 +9,7 @@ namespace mptransmission
    public static class variables
     {
         public static int selTorrent = 0;
-        //public static int listSize = 0;
+        public static int listSize = 0;
         public static int activeTorrents = 0;
         public static int pausedTorrents = 0;
         public static string[] torrentName = new string[100];
@@ -24,5 +24,9 @@ namespace mptransmission
         public static int[] torrentID = new int[100];
         public static int totalUpload = 0;
         public static int totalDownload = 0;
+        public static bool needsRestore = false;
+        public static string[] itemLabel = new string[100];
+        public static string[] itemLabel2 = new string[100];
+        public static string[] itemLabel3 = new string[100];
     }
 }

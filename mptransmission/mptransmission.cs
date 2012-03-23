@@ -166,6 +166,11 @@ namespace mptransmission
 
         protected override void OnPageLoad()
         {
+            if (variables.needsRestore)
+            {
+                restoreList();
+            }
+            variables.needsRestore = false;
             activeTorrents();
         }
 
@@ -276,12 +281,14 @@ namespace mptransmission
             {
                 GUIPropertyManager.SetProperty("#mptransmission.Details.ETA", "Completed - Seeding");
             }
+            else if (variables.torrentETA[variables.selTorrent] == "-2s")
+            {
+                GUIPropertyManager.SetProperty("#mptransmission.Details.ETA", "No Data - Awaiting Download");
+            }
             else
             {
                 GUIPropertyManager.SetProperty("#mptransmission.Details.ETA", variables.torrentETA[variables.selTorrent]);
             }
-
-            //variables.listSize = torrentList.ListItems.Count;
 
             if (torrentList.ListItems.Count == 0)
             {
@@ -299,6 +306,33 @@ namespace mptransmission
             else
             {
                 updateList();
+            }
+        }
+
+        public void saveList()
+        {
+            int i = 0;
+            while (i < torrentList.ListItems.Count)
+            {
+                variables.listSize = torrentList.ListItems.Count;
+                variables.itemLabel[i] = torrentList[i].Label;
+                variables.itemLabel2[i] = torrentList[i].Label2;
+                variables.itemLabel3[i] = torrentList[i].Label3;
+                i++;
+            }
+        }
+
+        public void restoreList()
+        {
+            int i = 0;
+            while (i < variables.listSize)
+            {
+                GUIListItem item = new GUIListItem();
+                item.Label = variables.itemLabel[i];
+                item.Label2 = variables.itemLabel2[i];
+                item.Label3 = variables.itemLabel3[i];
+                torrentList.Add(item);
+                i++;
             }
         }
 
@@ -372,7 +406,6 @@ namespace mptransmission
         protected override void OnPageDestroy(int newWindowId)
         {
             base.OnPageDestroy(newWindowId);
-            //aTimer.Elapsed -= new ElapsedEventHandler(OnTimedEvent);
             aTimer.Stop();
         }
 
@@ -410,6 +443,8 @@ namespace mptransmission
             }
             else
             {
+                variables.needsRestore = true;
+                saveList();
                 Connect();
                 GUIWindowManager.ActivateWindow(56348);
             }
@@ -453,6 +488,8 @@ namespace mptransmission
                         }
                         else
                         {
+                            variables.needsRestore = true;
+                            saveList();
                             Connect();
                             GUIWindowManager.ActivateWindow(56348);
                         }
@@ -470,11 +507,11 @@ namespace mptransmission
 
                         if (ask.IsConfirmed)
                         {
-
+                            //removeTorrentandFiles();
                         }
                         else
                         {
-
+                            //removeTorrent();
                         }
                         break;
                     };
