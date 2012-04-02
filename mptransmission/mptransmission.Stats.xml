@@ -59,7 +59,7 @@
       <font>mediastream12c</font>
       <align>right</align>
       <visible>yes</visible>
-      <label>torrent details</label>
+      <label>statistics</label>
       <animation effect="slide" start="-514,0" end="0,0" tween="quadratic" time="300" delay="0">WindowOpen</animation>
       <animation effect="slide" start="0,0" end="-514,0" tween="quadratic" time="300" delay="0">WindowClose</animation>
       <animation effect="fade" time="150">WindowClose</animation>
@@ -72,7 +72,7 @@
       <id>1</id>
       <posX>250</posX>
       <posY>250</posY>
-      <label>Name: #mptransmission.Details.Name</label>
+      <label>Total Downloaded: #mptransmission.Stats.TotalDownloads</label>
       <align>left</align>
       <textcolor>ffffffff</textcolor>
     </control>
@@ -82,7 +82,7 @@
       <id>1</id>
       <posX>250</posX>
       <posY>280</posY>
-      <label>ETA: #mptransmission.Details.ETA</label>
+      <label>Total Uploaded: #mptransmission.Stats.TotalUploads</label>
       <align>left</align>
       <textcolor>ffffffff</textcolor>
     </control>
@@ -92,7 +92,7 @@
       <id>1</id>
       <posX>250</posX>
       <posY>310</posY>
-      <label>Download Speed: #mptransmission.Details.DownloadSpeed</label>
+      <label>Files Added: #mptransmission.Stats.TotalFiles</label>
       <align>left</align>
       <textcolor>ffffffff</textcolor>
     </control>
@@ -102,7 +102,7 @@
       <id>1</id>
       <posX>250</posX>
       <posY>340</posY>
-      <label>Upload Speed: #mptransmission.Details.UploadSpeed</label>
+      <label>Number Of Sessions: #mptransmission.Stats.TotalSession</label>
       <align>left</align>
       <textcolor>ffffffff</textcolor>
     </control>
@@ -112,27 +112,20 @@
       <id>1</id>
       <posX>250</posX>
       <posY>370</posY>
-      <label>Size: #mptransmission.Details.Size</label>
+      <label>Up Time: #mptransmission.Stats.TotalSeconds</label>
       <align>left</align>
       <textcolor>ffffffff</textcolor>
     </control>
-    <control>
-      <description>text label</description>
-      <type>label</type>
-      <id>1</id>
-      <posX>250</posX>
-      <posY>400</posY>
-      <label>Peers: #mptransmission.Details.Peers</label>
-      <align>left</align>
-      <textcolor>ffffffff</textcolor>
-    </control>
+
+
+
     <control>
       <description>text label</description>
       <type>label</type>
       <id>1</id>
       <posX>250</posX>
       <posY>430</posY>
-      <label>Seeds: #mptransmission.Details.Seeds</label>
+      <label>Total Downloaded: #mptransmission.Stats.cur_TotalDownloads</label>
       <align>left</align>
       <textcolor>ffffffff</textcolor>
     </control>
@@ -142,7 +135,37 @@
       <id>1</id>
       <posX>250</posX>
       <posY>460</posY>
-      <label>Progress: #mptransmission.Details.Progress</label>
+      <label>Total Uploaded: #mptransmission.Stats.cur_TotalUploads</label>
+      <align>left</align>
+      <textcolor>ffffffff</textcolor>
+    </control>
+    <control>
+      <description>text label</description>
+      <type>label</type>
+      <id>1</id>
+      <posX>250</posX>
+      <posY>490</posY>
+      <label>Files Added: #mptransmission.Stats.cur_TotalFiles</label>
+      <align>left</align>
+      <textcolor>ffffffff</textcolor>
+    </control>
+    <control>
+      <description>text label</description>
+      <type>label</type>
+      <id>1</id>
+      <posX>250</posX>
+      <posY>520</posY>
+      <label>Number Of Sessions: #mptransmission.Stats.cur_TotalSession</label>
+      <align>left</align>
+      <textcolor>ffffffff</textcolor>
+    </control>
+    <control>
+      <description>text label</description>
+      <type>label</type>
+      <id>1</id>
+      <posX>250</posX>
+      <posY>550</posY>
+      <label>Up Time: #mptransmission.Stats.cur_TotalSeconds</label>
       <align>left</align>
       <textcolor>ffffffff</textcolor>
     </control>

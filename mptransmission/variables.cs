@@ -28,5 +28,17 @@ namespace mptransmission
         public static string[] itemLabel = new string[100];
         public static string[] itemLabel2 = new string[100];
         public static string[] itemLabel3 = new string[100];
+        public static long cumulative_stats = 0;
+        public static long current_stats = 0;
+        public static long statsUploaded = 0;
+        public static long statsDownloaded = 0;
+        public static long statsFiles = 0;
+        public static long statsSessions = 0;
+        public static long statsSeconds = 0;
+        public static long cur_statsUploaded = 0;
+        public static long cur_statsDownloaded = 0;
+        public static long cur_statsFiles = 0;
+        public static long cur_statsSessions = 0;
+        public static long cur_statsSeconds = 0;
     }
 }

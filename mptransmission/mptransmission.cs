@@ -55,7 +55,7 @@ namespace mptransmission
         /// <summary>
         /// Version of the plugin
         /// </summary>
-        public const string Version = "0.1 ALPHA";
+        public const string Version = "0.10";
 
         #endregion
 
@@ -229,11 +229,33 @@ namespace mptransmission
                 variables.totalDownload = (int)download;
                 JsonNumber upload = (JsonNumber)session["uploadSpeed"];
                 variables.totalUpload = (int)upload;
+                JsonObject cumulative_stats = (JsonObject)session["cumulative-stats"];
+                JsonObject current_stats = (JsonObject)session["current-stats"];
+                JsonNumber statsUploaded = (JsonNumber)cumulative_stats["uploadedBytes"];
+                JsonNumber statsDownloaded = (JsonNumber)cumulative_stats["downloadedBytes"];
+                JsonNumber statsFiles = (JsonNumber)cumulative_stats["filesAdded"];
+                JsonNumber statsSessions = (JsonNumber)cumulative_stats["sessionCount"];
+                JsonNumber statsSeconds = (JsonNumber)cumulative_stats["secondsActive"];
+                JsonNumber cur_statsUploaded = (JsonNumber)current_stats["uploadedBytes"];
+                JsonNumber cur_statsDownloaded = (JsonNumber)current_stats["downloadedBytes"];
+                JsonNumber cur_statsFiles = (JsonNumber)current_stats["filesAdded"];
+                JsonNumber cur_statsSessions = (JsonNumber)current_stats["sessionCount"];
+                JsonNumber cur_statsSeconds = (JsonNumber)current_stats["secondsActive"];
+                variables.statsUploaded = (long)statsUploaded;
+                variables.statsDownloaded = (long)statsDownloaded;
+                variables.statsFiles = (long)statsFiles;
+                variables.statsSessions = (long)statsSessions;
+                variables.statsSeconds = (long)statsSeconds;
+                variables.cur_statsUploaded = (long)cur_statsUploaded;
+                variables.cur_statsDownloaded = (long)cur_statsDownloaded;
+                variables.cur_statsFiles = (long)cur_statsFiles;
+                variables.cur_statsSessions = (long)cur_statsSessions;
+                variables.cur_statsSeconds = (long)cur_statsSeconds;
                 var torrent = (IDictionary)client.Invoke("torrent-get", new { fields = new[] { "name", "percentDone", "sizeWhenDone", "peersConnected", "peersGettingFromUs", "peersSendingToUs", "eta", "rateDownload", "rateUpload", "id"} }, null);
                 var i = 0;
                 foreach (IDictionary torrents in (IList)torrent["torrents"])
                 {
-                    if (i < variables.activeTorrents)
+                    if (i < (variables.activeTorrents + variables.pausedTorrents))
                     {
                         variables.torrentName[i] = (string)torrents["name"];
                         JsonNumber percent = (JsonNumber)torrents["percentDone"];
@@ -265,10 +287,13 @@ namespace mptransmission
                         i++;
                     }
                 }
+
+            //Main Window Labels
             GUIPropertyManager.SetProperty("#numDownloads", variables.activeTorrents.ToString("0"));
             GUIPropertyManager.SetProperty("#numPausedDownloads", variables.pausedTorrents.ToString("0"));
             GUIPropertyManager.SetProperty("#uploadSpeedTotal", UnitConvert.TransferSpeedToString(variables.totalUpload));
             GUIPropertyManager.SetProperty("#downloadSpeedTotal", UnitConvert.TransferSpeedToString(variables.totalDownload));
+            //Details Window Labels
             GUIPropertyManager.SetProperty("#mptransmission.Details.Name", variables.torrentName[variables.selTorrent]);
             GUIPropertyManager.SetProperty("#mptransmission.Details.DownloadSpeed", variables.torrentDown[variables.selTorrent]);
             GUIPropertyManager.SetProperty("#mptransmission.Details.UploadSpeed", variables.torrentUp[variables.selTorrent]);
@@ -276,6 +301,18 @@ namespace mptransmission
             GUIPropertyManager.SetProperty("#mptransmission.Details.Peers", variables.torrentPeers[variables.selTorrent]);
             GUIPropertyManager.SetProperty("#mptransmission.Details.Seeds", variables.torrentSeeds[variables.selTorrent]);
             GUIPropertyManager.SetProperty("#mptransmission.Details.Progress", variables.torrentProgress[variables.selTorrent]);
+            //Cumulative Stats Window Labels
+            GUIPropertyManager.SetProperty("#mptransmission.Stats.TotalUploads", UnitConvert.SizeToString(variables.statsUploaded));
+            GUIPropertyManager.SetProperty("#mptransmission.Stats.TotalDownloads", UnitConvert.SizeToString(variables.statsDownloaded));
+            GUIPropertyManager.SetProperty("#mptransmission.Stats.TotalFiles", variables.statsFiles.ToString());
+            GUIPropertyManager.SetProperty("#mptransmission.Stats.TotalSession", variables.statsSessions.ToString());
+            GUIPropertyManager.SetProperty("#mptransmission.Stats.TotalSeconds", UnitConvert.TimeRemainingToString(variables.statsSeconds));
+            //Current Stats Window Labels
+            GUIPropertyManager.SetProperty("#mptransmission.Stats.cur_TotalUploads", UnitConvert.SizeToString(variables.cur_statsUploaded));
+            GUIPropertyManager.SetProperty("#mptransmission.Stats.cur_TotalDownloads", UnitConvert.SizeToString(variables.cur_statsDownloaded));
+            GUIPropertyManager.SetProperty("#mptransmission.Stats.cur_TotalFiles", variables.cur_statsFiles.ToString());
+            GUIPropertyManager.SetProperty("#mptransmission.Stats.cur_TotalSession", variables.cur_statsSessions.ToString());
+            GUIPropertyManager.SetProperty("#mptransmission.Stats.cur_TotalSeconds", UnitConvert.TimeRemainingToString(variables.cur_statsSeconds));
 
             if (variables.torrentETA[variables.selTorrent] == "-1s")
             {
@@ -290,10 +327,6 @@ namespace mptransmission
                 GUIPropertyManager.SetProperty("#mptransmission.Details.ETA", variables.torrentETA[variables.selTorrent]);
             }
 
-            if (torrentList.ListItems.Count == 0)
-            {
-                PopulateList();
-            }
             if (torrentList.ListItems.Count < (variables.activeTorrents + variables.pausedTorrents))
             {
                 rePopulateList();
@@ -340,31 +373,44 @@ namespace mptransmission
         {
             var url = new Uri("http://" + LocalSettings.Hostname + ":" + LocalSettings.Port + "/transmission/rpc");
             var client = new TransmissionClient(url);
-            int[] fields = new[] { pauseID };
-            client.Invoke("torrent-stop", fields, null);
+            client.Invoke("torrent-stop", new { ids = new[] { pauseID } }, null);
+        }
+
+        public static void pauseTorrent()
+        {
+            var url = new Uri("http://" + LocalSettings.Hostname + ":" + LocalSettings.Port + "/transmission/rpc");
+            var client = new TransmissionClient(url);
+            client.Invoke("torrent-stop", null, null);
         }
 
         public static void startTorrent(int startID)
         {
             var url = new Uri("http://" + LocalSettings.Hostname + ":" + LocalSettings.Port + "/transmission/rpc");
             var client = new TransmissionClient(url);
-            client.Invoke("torrent-start", new { fields = new[] { startID } }, null);
+            client.Invoke("torrent-start", new { ids = new[] { startID } }, null);
+        }
+
+        public static void startTorrent()
+        {
+            var url = new Uri("http://" + LocalSettings.Hostname + ":" + LocalSettings.Port + "/transmission/rpc");
+            var client = new TransmissionClient(url);
+            client.Invoke("torrent-start", null, null);
         }
 
         public static void removeTorrent(int removeID)
         {
             var url = new Uri("http://" + LocalSettings.Hostname + ":" + LocalSettings.Port + "/transmission/rpc");
             var client = new TransmissionClient(url);
-            client.Invoke("torrent-remove", new { fields = new[] { removeID } }, null);
+            client.Invoke("torrent-remove", new { ids = new[] { removeID } }, null);
         }
 
         public static void removeTorrentandFiles(int removeID)
         {
             var url = new Uri("http://" + LocalSettings.Hostname + ":" + LocalSettings.Port + "/transmission/rpc");
             var client = new TransmissionClient(url);
-            client.Invoke("torrent-remove", removeID, null);
+            client.Invoke("torrent-remove", new JsonObject { { "ids", new[] {removeID} }, { "delete-local-data", true } }, null);
         }
-        
+
         private void PopulateList()    
         {
         torrentList.Clear();
@@ -393,13 +439,23 @@ namespace mptransmission
         private void updateList()    
         {
             int i = 0;
-            while (i < (variables.activeTorrents + variables.pausedTorrents))
+            if (torrentList.ListItems.Count == 0)
             {
-                torrentList.ListItems[i].Label = variables.torrentName[i];
-                torrentList.ListItems[i].Label2 = variables.torrentProgress[i];
-                string temp = string.Format("S-{0}({1}) ~ L-{2}", variables.torrentPeersConnected[i], variables.torrentSeeds[i], variables.torrentPeers[i]);
-                torrentList.ListItems[i].Label3 = temp;
-                i++;
+                torrentList.Clear();
+                GUIListItem item = new GUIListItem();
+                item.Label = "No Torrents :'(";
+                torrentList.Add(item);
+            }
+            else
+            {
+                while (i < (variables.activeTorrents + variables.pausedTorrents))
+                {
+                    torrentList.ListItems[i].Label = variables.torrentName[i];
+                    torrentList.ListItems[i].Label2 = variables.torrentProgress[i];
+                    string temp = string.Format("S-{0}({1}) ~ L-{2}", variables.torrentPeersConnected[i], variables.torrentSeeds[i], variables.torrentPeers[i]);
+                    torrentList.ListItems[i].Label3 = temp;
+                    i++;
+                }
             }
         }
 
@@ -452,6 +508,7 @@ namespace mptransmission
 
         protected override void OnShowContextMenu()
         {
+            variables.selTorrent = torrentList.SelectedListItemIndex;
             GUIDialogMenu dlg = (GUIDialogMenu)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_DIALOG_MENU);
             if (dlg == null)
             {
@@ -464,6 +521,9 @@ namespace mptransmission
             dlg.Add("Stop");
             dlg.Add("Remove");
             dlg.Add("Details");
+            dlg.Add("Start All");
+            dlg.Add("Stop All");
+            dlg.Add("Stats");
             dlg.DoModal(GUIWindowManager.ActiveWindow);
 
             switch (dlg.SelectedLabelText)
@@ -474,10 +534,20 @@ namespace mptransmission
                         startTorrent(selected);
                         break;
                     };
+                case "Start All":
+                    {
+                        startTorrent();
+                        break;
+                    };
                 case "Stop":
                     {
                         int selected = variables.torrentID[variables.selTorrent];
                         pauseTorrent(selected);
+                        break;
+                    };
+                case "Stop All":
+                    {
+                        pauseTorrent();
                         break;
                     };
                 case "Details":
@@ -495,8 +565,17 @@ namespace mptransmission
                         }
                         break;
                     };
+                case "Stats":
+                    {
+                        variables.needsRestore = true;
+                        saveList();
+                        Connect();
+                        GUIWindowManager.ActivateWindow(56349);
+                        break;
+                    };
                 case "Remove":
                     {
+                        int selected = variables.torrentID[variables.selTorrent];
                         GUIDialogYesNo ask = (GUIDialogYesNo)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_DIALOG_YES_NO);
                         ask.Reset();
                         ask.SetHeading("Remove downloaded files?");
@@ -507,11 +586,11 @@ namespace mptransmission
 
                         if (ask.IsConfirmed)
                         {
-                            //removeTorrentandFiles();
+                            removeTorrentandFiles(selected);
                         }
                         else
                         {
-                            //removeTorrent();
+                            removeTorrent(selected);
                         }
                         break;
                     };

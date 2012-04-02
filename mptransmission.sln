@@ -6,13 +6,23 @@ EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
+		Debug|Mixed Platforms = Debug|Mixed Platforms
+		Debug|x86 = Debug|x86
 		Release|Any CPU = Release|Any CPU
+		Release|Mixed Platforms = Release|Mixed Platforms
+		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{FC4ABD6F-1E29-4B3B-82CD-3C5AFE2F019C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{FC4ABD6F-1E29-4B3B-82CD-3C5AFE2F019C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FC4ABD6F-1E29-4B3B-82CD-3C5AFE2F019C}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{FC4ABD6F-1E29-4B3B-82CD-3C5AFE2F019C}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{FC4ABD6F-1E29-4B3B-82CD-3C5AFE2F019C}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{FC4ABD6F-1E29-4B3B-82CD-3C5AFE2F019C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FC4ABD6F-1E29-4B3B-82CD-3C5AFE2F019C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FC4ABD6F-1E29-4B3B-82CD-3C5AFE2F019C}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{FC4ABD6F-1E29-4B3B-82CD-3C5AFE2F019C}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{FC4ABD6F-1E29-4B3B-82CD-3C5AFE2F019C}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
