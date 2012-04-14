@@ -37,6 +37,17 @@
       <colordiffuse>c9ffffff</colordiffuse>
     </control>
     <control>
+      <description>Background Box</description>
+      <type>image</type>
+      <id>1</id>
+      <posX>40</posX>
+      <posY>100</posY>
+      <width>1200</width>
+      <height>450</height>
+      <texture>weatherframe2b.png</texture>
+      <colordiffuse>90ffffff</colordiffuse>
+    </control>
+    <control>
       <id>1</id>
       <description>Top Title Background</description>
       <type>image</type>
@@ -59,6 +70,34 @@
       <font>mediastream12c</font>
       <align>right</align>
       <visible>yes</visible>
+      <label>mp-transmission</label>
+      <animation effect="slide" start="-514,0" end="0,0" tween="quadratic" time="300" delay="0">WindowOpen</animation>
+      <animation effect="slide" start="0,0" end="-514,0" tween="quadratic" time="300" delay="0">WindowClose</animation>
+      <animation effect="fade" time="150">WindowClose</animation>
+    </control>
+    <control>
+      <id>1</id>
+      <description>Top Title Background</description>
+      <type>image</type>
+      <posX>450</posX>
+      <posY>11</posY>
+      <width>400</width>
+      <height>35</height>
+      <texture>tvtitlebg.png</texture>
+      <animation effect="slide" start="-514,0" end="0,0" tween="quadratic" time="300" delay="0">WindowOpen</animation>
+      <animation effect="slide" start="0,0" end="-514,0" tween="quadratic" time="300" delay="0">WindowClose</animation>
+      <animation effect="fade" time="150">WindowClose</animation>
+    </control>
+    <control>
+      <id>1</id>
+      <type>fadelabel</type>
+      <description>Top Title</description>
+      <posX>830</posX>
+      <posY>13</posY>
+      <width>350</width>
+      <font>mediastream12c</font>
+      <align>right</align>
+      <visible>yes</visible>
       <label>statistics</label>
       <animation effect="slide" start="-514,0" end="0,0" tween="quadratic" time="300" delay="0">WindowOpen</animation>
       <animation effect="slide" start="0,0" end="-514,0" tween="quadratic" time="300" delay="0">WindowClose</animation>
@@ -69,8 +108,30 @@
     <control>
       <description>text label</description>
       <type>label</type>
+      <id>0</id>
+      <posX>290</posX>
+      <posY>210</posY>
+      <label>Cumulative</label>
+      <font>mediastream12c</font>
+      <textcolor>ff006698</textcolor>
+      <visible>true</visible>
+    </control>
+    <control>
+      <description>text label</description>
+      <type>label</type>
+      <id>0</id>
+      <posX>750</posX>
+      <posY>210</posY>
+      <label>Current Session</label>
+      <font>mediastream12c</font>
+      <textcolor>ff006698</textcolor>
+      <visible>true</visible>
+    </control>
+    <control>
+      <description>text label</description>
+      <type>label</type>
       <id>1</id>
-      <posX>250</posX>
+      <posX>200</posX>
       <posY>250</posY>
       <label>Total Downloaded: #mptransmission.Stats.TotalDownloads</label>
       <align>left</align>
@@ -80,7 +141,7 @@
       <description>text label</description>
       <type>label</type>
       <id>1</id>
-      <posX>250</posX>
+      <posX>200</posX>
       <posY>280</posY>
       <label>Total Uploaded: #mptransmission.Stats.TotalUploads</label>
       <align>left</align>
@@ -90,7 +151,7 @@
       <description>text label</description>
       <type>label</type>
       <id>1</id>
-      <posX>250</posX>
+      <posX>200</posX>
       <posY>310</posY>
       <label>Files Added: #mptransmission.Stats.TotalFiles</label>
       <align>left</align>
@@ -100,7 +161,7 @@
       <description>text label</description>
       <type>label</type>
       <id>1</id>
-      <posX>250</posX>
+      <posX>200</posX>
       <posY>340</posY>
       <label>Number Of Sessions: #mptransmission.Stats.TotalSession</label>
       <align>left</align>
@@ -110,7 +171,7 @@
       <description>text label</description>
       <type>label</type>
       <id>1</id>
-      <posX>250</posX>
+      <posX>200</posX>
       <posY>370</posY>
       <label>Up Time: #mptransmission.Stats.TotalSeconds</label>
       <align>left</align>
@@ -123,8 +184,8 @@
       <description>text label</description>
       <type>label</type>
       <id>1</id>
-      <posX>250</posX>
-      <posY>430</posY>
+      <posX>690</posX>
+      <posY>250</posY>
       <label>Total Downloaded: #mptransmission.Stats.cur_TotalDownloads</label>
       <align>left</align>
       <textcolor>ffffffff</textcolor>
@@ -133,8 +194,8 @@
       <description>text label</description>
       <type>label</type>
       <id>1</id>
-      <posX>250</posX>
-      <posY>460</posY>
+      <posX>690</posX>
+      <posY>280</posY>
       <label>Total Uploaded: #mptransmission.Stats.cur_TotalUploads</label>
       <align>left</align>
       <textcolor>ffffffff</textcolor>
@@ -143,8 +204,8 @@
       <description>text label</description>
       <type>label</type>
       <id>1</id>
-      <posX>250</posX>
-      <posY>490</posY>
+      <posX>690</posX>
+      <posY>310</posY>
       <label>Files Added: #mptransmission.Stats.cur_TotalFiles</label>
       <align>left</align>
       <textcolor>ffffffff</textcolor>
@@ -153,8 +214,8 @@
       <description>text label</description>
       <type>label</type>
       <id>1</id>
-      <posX>250</posX>
-      <posY>520</posY>
+      <posX>690</posX>
+      <posY>340</posY>
       <label>Number Of Sessions: #mptransmission.Stats.cur_TotalSession</label>
       <align>left</align>
       <textcolor>ffffffff</textcolor>
@@ -163,8 +224,8 @@
       <description>text label</description>
       <type>label</type>
       <id>1</id>
-      <posX>250</posX>
-      <posY>550</posY>
+      <posX>690</posX>
+      <posY>370</posY>
       <label>Up Time: #mptransmission.Stats.cur_TotalSeconds</label>
       <align>left</align>
       <textcolor>ffffffff</textcolor>

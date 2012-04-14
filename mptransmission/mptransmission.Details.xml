@@ -37,6 +37,17 @@
       <colordiffuse>c9ffffff</colordiffuse>
     </control>
     <control>
+      <description>Background Box</description>
+      <type>image</type>
+      <id>1</id>
+      <posX>40</posX>
+      <posY>100</posY>
+      <width>1200</width>
+      <height>450</height>
+      <texture>weatherframe2b.png</texture>
+      <colordiffuse>90ffffff</colordiffuse>
+    </control>
+    <control>
       <id>1</id>
       <description>Top Title Background</description>
       <type>image</type>
@@ -59,6 +70,34 @@
       <font>mediastream12c</font>
       <align>right</align>
       <visible>yes</visible>
+      <label>mp-transmission</label>
+      <animation effect="slide" start="-514,0" end="0,0" tween="quadratic" time="300" delay="0">WindowOpen</animation>
+      <animation effect="slide" start="0,0" end="-514,0" tween="quadratic" time="300" delay="0">WindowClose</animation>
+      <animation effect="fade" time="150">WindowClose</animation>
+    </control>
+    <control>
+      <id>1</id>
+      <description>Top Title Background</description>
+      <type>image</type>
+      <posX>450</posX>
+      <posY>11</posY>
+      <width>400</width>
+      <height>35</height>
+      <texture>tvtitlebg.png</texture>
+      <animation effect="slide" start="-514,0" end="0,0" tween="quadratic" time="300" delay="0">WindowOpen</animation>
+      <animation effect="slide" start="0,0" end="-514,0" tween="quadratic" time="300" delay="0">WindowClose</animation>
+      <animation effect="fade" time="150">WindowClose</animation>
+    </control>
+    <control>
+      <id>1</id>
+      <type>fadelabel</type>
+      <description>Top Title</description>
+      <posX>830</posX>
+      <posY>13</posY>
+      <width>350</width>
+      <font>mediastream12c</font>
+      <align>right</align>
+      <visible>yes</visible>
       <label>torrent details</label>
       <animation effect="slide" start="-514,0" end="0,0" tween="quadratic" time="300" delay="0">WindowOpen</animation>
       <animation effect="slide" start="0,0" end="-514,0" tween="quadratic" time="300" delay="0">WindowClose</animation>
@@ -69,9 +108,20 @@
     <control>
       <description>text label</description>
       <type>label</type>
+      <id>0</id>
+      <posX>500</posX>
+      <posY>125</posY>
+      <label>Torrent Details</label>
+      <font>mediastream12c</font>
+      <textcolor>ff006698</textcolor>
+      <visible>true</visible>
+    </control>
+    <control>
+      <description>text label</description>
+      <type>label</type>
       <id>1</id>
       <posX>250</posX>
-      <posY>250</posY>
+      <posY>200</posY>
       <label>Name: #mptransmission.Details.Name</label>
       <align>left</align>
       <textcolor>ffffffff</textcolor>
@@ -81,7 +131,7 @@
       <type>label</type>
       <id>1</id>
       <posX>250</posX>
-      <posY>280</posY>
+      <posY>230</posY>
       <label>ETA: #mptransmission.Details.ETA</label>
       <align>left</align>
       <textcolor>ffffffff</textcolor>
@@ -91,7 +141,7 @@
       <type>label</type>
       <id>1</id>
       <posX>250</posX>
-      <posY>310</posY>
+      <posY>260</posY>
       <label>Download Speed: #mptransmission.Details.DownloadSpeed</label>
       <align>left</align>
       <textcolor>ffffffff</textcolor>
@@ -101,7 +151,7 @@
       <type>label</type>
       <id>1</id>
       <posX>250</posX>
-      <posY>340</posY>
+      <posY>290</posY>
       <label>Upload Speed: #mptransmission.Details.UploadSpeed</label>
       <align>left</align>
       <textcolor>ffffffff</textcolor>
@@ -111,7 +161,7 @@
       <type>label</type>
       <id>1</id>
       <posX>250</posX>
-      <posY>370</posY>
+      <posY>320</posY>
       <label>Size: #mptransmission.Details.Size</label>
       <align>left</align>
       <textcolor>ffffffff</textcolor>
@@ -121,7 +171,7 @@
       <type>label</type>
       <id>1</id>
       <posX>250</posX>
-      <posY>400</posY>
+      <posY>350</posY>
       <label>Peers: #mptransmission.Details.Peers</label>
       <align>left</align>
       <textcolor>ffffffff</textcolor>
@@ -131,7 +181,7 @@
       <type>label</type>
       <id>1</id>
       <posX>250</posX>
-      <posY>430</posY>
+      <posY>380</posY>
       <label>Seeds: #mptransmission.Details.Seeds</label>
       <align>left</align>
       <textcolor>ffffffff</textcolor>
@@ -141,7 +191,7 @@
       <type>label</type>
       <id>1</id>
       <posX>250</posX>
-      <posY>460</posY>
+      <posY>410</posY>
       <label>Progress: #mptransmission.Details.Progress</label>
       <align>left</align>
       <textcolor>ffffffff</textcolor>
