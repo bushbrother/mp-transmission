@@ -16,7 +16,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-/* Class Description here ... */
+/* This class defines the graphical form for configuration of the plugin. */
 
 using System;
 using System.Collections;
@@ -30,6 +30,7 @@ namespace mptransmission
 {
     public partial class SetupForm : Form
     {
+        // This method initialises all of the boxes and menus with any data that has previously been saved.
         public SetupForm()
         {
             InitializeComponent();
@@ -47,6 +48,7 @@ namespace mptransmission
         {
         }
 
+        // This methos greys out the username and password boxes if authentication is not ticked.
         private void checkBoxAuth_CheckedChanged(object sender, EventArgs e)
         {
             if (checkBoxAuth.Checked){
@@ -59,6 +61,8 @@ namespace mptransmission
             }
         }
 
+        // This method is invoked by pressing the OK button. It sets all the relevant vales within LocalSettings
+        // to the values in the form and then runs the save method to write them to the XML file.
         private void buttonOK_Click(object sender, EventArgs e)
         {
             LocalSettings.Hostname = textBoxHostname.Text;
@@ -76,6 +80,7 @@ namespace mptransmission
             this.Close();
         }
 
+        // This method is invoked by pressing the test button, it saves all data and then invokes the client.
         private void buttonTest_Click(object sender, EventArgs e)
         {
             LocalSettings.Hostname = textBoxHostname.Text;
@@ -96,47 +101,63 @@ namespace mptransmission
             Connect();
         }
 
+        // This method clears the color of the text box to white.
         public void makeWhite()
         {
             downloadText.Text = "";
             downloadText.BackColor = System.Drawing.Color.White;
         }
 
+        // This method is invoked by the test button method above, it checks for various errors in the connection.
         public void Connect()
         {
+            // Initialise the string.
             string tempDownloadDir = "empty";
-                if (LocalSettings.Hostname.Equals(""))
-                {
-                    MessageBox.Show("No Hostname Set!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
-                }
-                if (!Uri.IsWellFormedUriString("http://" + LocalSettings.Hostname + ":"+LocalSettings.Port + "/transmission/rpc", UriKind.Absolute))
-                {
-                    MessageBox.Show("Invalid Hostname Location!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
-                }
-                try
-                {
-                    var url = new Uri("http://" + LocalSettings.Hostname + ":" + LocalSettings.Port + "/transmission/rpc");
-                    var client = new TransmissionClient(url);
-                    JsonObject session = (JsonObject)client.Invoke("session-get", null);
-                    tempDownloadDir = (string)session["download-dir"];
-                    if (tempDownloadDir != "empty")
-                    {
-                        downloadText.Text = "Success!";
-                        downloadText.BackColor = System.Drawing.Color.PaleGreen;
-                    }
-                    tempDownloadDir = "empty";
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
+            // If no hostname is entered then inform the user.
+            if (LocalSettings.Hostname.Equals(""))
+            {
+                MessageBox.Show("No Hostname Set!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
             }
+            // Check that the hostname and port are true URIs.
+            if (!Uri.IsWellFormedUriString("http://" + LocalSettings.Hostname + ":"+LocalSettings.Port + "/transmission/rpc", UriKind.Absolute))
+            {
+                MessageBox.Show("Invalid Hostname Location!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            // Try and connect to the RPC server and get the download directory string.
+            try
+            {
+                var url = new Uri("http://" + LocalSettings.Hostname + ":" + LocalSettings.Port + "/transmission/rpc");
+                var client = new TransmissionClient(url);
+                JsonObject session = (JsonObject)client.Invoke("session-get", null);
+                tempDownloadDir = (string)session["download-dir"];
+                // If we gathered some data then we connected OK, mark this in the text box and make it green.
+                if (tempDownloadDir != "empty")
+                {
+                    downloadText.Text = "Success!";
+                    downloadText.BackColor = System.Drawing.Color.PaleGreen;
+                }
+                tempDownloadDir = "empty";
+            }
+            // Catch any other error types.
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
 
         private void downloadText_TextChanged(object sender, EventArgs e)
         {
+
         }
+
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        #region TransmissionClient
 
         public class TransmissionClient
         {
@@ -251,9 +272,7 @@ namespace mptransmission
             }
         }
 
-        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
-        {
+        #endregion
 
-        }
     }
 }

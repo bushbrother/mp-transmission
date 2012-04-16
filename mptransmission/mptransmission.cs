@@ -15,7 +15,9 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-/* Class Description here ... */
+/* This is the main class for the mp-transmission plugin and includes the 
+   configuration data for the plugin to use in MediaPortal configuration,
+   as well as the main methods that drive the plugin. */
 
 using System;
 using System.Windows.Forms;
@@ -33,11 +35,15 @@ using System.Timers;
 
 namespace mptransmission
 {
+    // Here we define the two images to use within MediaPortal to show if the plugin
+    // is enabled or disabled.
     [PluginIcons("mptransmission.Icon.png", "mptransmission.Icon_Disabled.png")]
     public class mptransmission : GUIWindow, ISetupForm
     {
+        // Defining the list item that is used to hold all torrents.
         [SkinControlAttribute(5)] public GUIListControl torrentList = null;
 
+        // Initialising the timer that will be used accross the plugin to refresh data.
         internal static System.Timers.Timer aTimer = new System.Timers.Timer();
 
         public mptransmission()
@@ -55,7 +61,7 @@ namespace mptransmission
         /// <summary>
         /// Version of the plugin
         /// </summary>
-        public const string Version = "0.10";
+        public const string Version = "0.20";
 
         #endregion
 
@@ -151,8 +157,11 @@ namespace mptransmission
 
         #endregion
 
-        #region Skin
+        #region Methods
 
+        // This method is invoked when the plugin is loaded, it loads the settings from the main MediaPortal
+        // XML which holds all the data from the plugin setup. It then creates the timer, sets some variables
+        // to "0" and then loads the main skin file.
         public override bool Init()
         {
             LocalSettings.Load();
@@ -164,6 +173,10 @@ namespace mptransmission
             return Load(GUIGraphicsContext.Skin+@"\mptransmission.xml");
         }
 
+        // This method deals with the initial XML skin file load, it checks to see if the file is being loaded
+        // from another window (stats or details XML) or if it is the first to be loaded. If it is being loaded
+        // from another mp-transmission XML then it will restore the saved list. It then starts the activeTorrents
+        // method.
         protected override void OnPageLoad()
         {
             if (variables.needsRestore)
@@ -174,6 +187,7 @@ namespace mptransmission
             activeTorrents();
         }
 
+        // This method sets the timer interval dependant on the plugin configuration. It then starts the timer.
         private void activeTorrents()
         {
             // Set the Interval to settings value.
@@ -208,18 +222,19 @@ namespace mptransmission
                 aTimer.Start();
         }
 
-
+        // This is the method that is called at each timer interval, it simply calls the main Connect method below.
         public void OnTimedEvent(object source, ElapsedEventArgs e)
         {
             Connect();
         }
 
-        #endregion
-
+        // This is the main method that gets all data from the RPC server and updates a set of arrays within variables.cs.
         public void Connect()
         {
+                // Set the url to the stored RPC server location and create the correct string format.
                 var url = new Uri("http://" + LocalSettings.Hostname + ":" + LocalSettings.Port + "/transmission/rpc");
                 var client = new TransmissionClient(url);
+                // The below commands set the single variables.
                 JsonObject session = (JsonObject)client.Invoke("session-stats", null);
                 JsonNumber num = (JsonNumber)session["activeTorrentCount"];
                 variables.activeTorrents = (int)num;
@@ -251,8 +266,10 @@ namespace mptransmission
                 variables.cur_statsFiles = (long)cur_statsFiles;
                 variables.cur_statsSessions = (long)cur_statsSessions;
                 variables.cur_statsSeconds = (long)cur_statsSeconds;
+                // Some objects are groups of "fields" that need to be parsed.
                 var torrent = (IDictionary)client.Invoke("torrent-get", new { fields = new[] { "name", "percentDone", "sizeWhenDone", "peersConnected", "peersGettingFromUs", "peersSendingToUs", "eta", "rateDownload", "rateUpload", "id"} }, null);
                 var i = 0;
+                // Loop to assign all the values for each torrent in the list.
                 foreach (IDictionary torrents in (IList)torrent["torrents"])
                 {
                     if (i < (variables.activeTorrents + variables.pausedTorrents))
@@ -293,6 +310,7 @@ namespace mptransmission
             GUIPropertyManager.SetProperty("#numPausedDownloads", variables.pausedTorrents.ToString("0"));
             GUIPropertyManager.SetProperty("#uploadSpeedTotal", UnitConvert.TransferSpeedToString(variables.totalUpload));
             GUIPropertyManager.SetProperty("#downloadSpeedTotal", UnitConvert.TransferSpeedToString(variables.totalDownload));
+
             //Details Window Labels
             GUIPropertyManager.SetProperty("#mptransmission.Details.Name", variables.torrentName[variables.selTorrent]);
             GUIPropertyManager.SetProperty("#mptransmission.Details.DownloadSpeed", variables.torrentDown[variables.selTorrent]);
@@ -301,12 +319,14 @@ namespace mptransmission
             GUIPropertyManager.SetProperty("#mptransmission.Details.Peers", variables.torrentPeers[variables.selTorrent]);
             GUIPropertyManager.SetProperty("#mptransmission.Details.Seeds", variables.torrentSeeds[variables.selTorrent]);
             GUIPropertyManager.SetProperty("#mptransmission.Details.Progress", variables.torrentProgress[variables.selTorrent]);
+
             //Cumulative Stats Window Labels
             GUIPropertyManager.SetProperty("#mptransmission.Stats.TotalUploads", UnitConvert.SizeToString(variables.statsUploaded));
             GUIPropertyManager.SetProperty("#mptransmission.Stats.TotalDownloads", UnitConvert.SizeToString(variables.statsDownloaded));
             GUIPropertyManager.SetProperty("#mptransmission.Stats.TotalFiles", variables.statsFiles.ToString());
             GUIPropertyManager.SetProperty("#mptransmission.Stats.TotalSession", variables.statsSessions.ToString());
             GUIPropertyManager.SetProperty("#mptransmission.Stats.TotalSeconds", UnitConvert.TimeRemainingToString(variables.statsSeconds));
+
             //Current Stats Window Labels
             GUIPropertyManager.SetProperty("#mptransmission.Stats.cur_TotalUploads", UnitConvert.SizeToString(variables.cur_statsUploaded));
             GUIPropertyManager.SetProperty("#mptransmission.Stats.cur_TotalDownloads", UnitConvert.SizeToString(variables.cur_statsDownloaded));
@@ -314,34 +334,43 @@ namespace mptransmission
             GUIPropertyManager.SetProperty("#mptransmission.Stats.cur_TotalSession", variables.cur_statsSessions.ToString());
             GUIPropertyManager.SetProperty("#mptransmission.Stats.cur_TotalSeconds", UnitConvert.TimeRemainingToString(variables.cur_statsSeconds));
 
+            // Checking for a completed torrent to display a readable message.
             if (variables.torrentETA[variables.selTorrent] == "-1s")
             {
                 GUIPropertyManager.SetProperty("#mptransmission.Details.ETA", "Completed - Seeding");
             }
+            // Checking for a torrent that has not started yet to display a readable message.
             else if (variables.torrentETA[variables.selTorrent] == "-2s")
             {
                 GUIPropertyManager.SetProperty("#mptransmission.Details.ETA", "No Data - Awaiting Download");
             }
+            // Otherwise put the actual ETA calculated.
             else
             {
                 GUIPropertyManager.SetProperty("#mptransmission.Details.ETA", variables.torrentETA[variables.selTorrent]);
             }
 
+            // If there are less items in the list than the current sum of torrents, we need to re-populate
+            // the list to get the new torrent data.
             if (torrentList.ListItems.Count < (variables.activeTorrents + variables.pausedTorrents))
             {
                 rePopulateList();
             }
+            // If there are more torrents in the list than the sum of torrents then a torrent has been removed.
+            // We re-populate the list.
             if (torrentList.ListItems.Count > (variables.activeTorrents + variables.pausedTorrents))
             {
                 rePopulateList();
                 PopulateList();
             }
+            // Otherwise we should just update the existing data for the list.
             else
             {
                 updateList();
             }
         }
 
+        // This method saves the list data, including the number of items in the list and associated labels.
         public void saveList()
         {
             int i = 0;
@@ -355,6 +384,7 @@ namespace mptransmission
             }
         }
 
+        // This method restores the list from saved data.
         public void restoreList()
         {
             int i = 0;
@@ -369,6 +399,7 @@ namespace mptransmission
             }
         }
 
+        // This method is called from the context menu and takes an integer that represents the torrent selected to be paused.
         public static void pauseTorrent(int pauseID)
         {
             var url = new Uri("http://" + LocalSettings.Hostname + ":" + LocalSettings.Port + "/transmission/rpc");
@@ -376,6 +407,7 @@ namespace mptransmission
             client.Invoke("torrent-stop", new { ids = new[] { pauseID } }, null);
         }
 
+        // This method is called from the context menu and pauses all torrents as it does not define a single torrent.
         public static void pauseTorrent()
         {
             var url = new Uri("http://" + LocalSettings.Hostname + ":" + LocalSettings.Port + "/transmission/rpc");
@@ -383,6 +415,7 @@ namespace mptransmission
             client.Invoke("torrent-stop", null, null);
         }
 
+        // This method is called from the context menu and takes an integer that represents the torrent selected to be started.
         public static void startTorrent(int startID)
         {
             var url = new Uri("http://" + LocalSettings.Hostname + ":" + LocalSettings.Port + "/transmission/rpc");
@@ -390,6 +423,7 @@ namespace mptransmission
             client.Invoke("torrent-start", new { ids = new[] { startID } }, null);
         }
 
+        // This method is called from the context menu and starts all torrents as it does not define a single torrent.
         public static void startTorrent()
         {
             var url = new Uri("http://" + LocalSettings.Hostname + ":" + LocalSettings.Port + "/transmission/rpc");
@@ -397,6 +431,8 @@ namespace mptransmission
             client.Invoke("torrent-start", null, null);
         }
 
+        // This method is called from the context menu and takes an integer that represents the torrent selected to be removed.
+        // The downloaded data is preserved using this method.
         public static void removeTorrent(int removeID)
         {
             var url = new Uri("http://" + LocalSettings.Hostname + ":" + LocalSettings.Port + "/transmission/rpc");
@@ -404,6 +440,8 @@ namespace mptransmission
             client.Invoke("torrent-remove", new { ids = new[] { removeID } }, null);
         }
 
+        // This method is called from the context menu and takes an integer that represents the torrent selected to be removed.
+        // The downloaded data is deleted permanently using this method.
         public static void removeTorrentandFiles(int removeID)
         {
             var url = new Uri("http://" + LocalSettings.Hostname + ":" + LocalSettings.Port + "/transmission/rpc");
@@ -411,6 +449,8 @@ namespace mptransmission
             client.Invoke("torrent-remove", new JsonObject { { "ids", new[] {removeID} }, { "delete-local-data", true } }, null);
         }
 
+        // This method checks to see if there are any torrents to be listed, if there are then it runs through the stored
+        // arrays of data and uses them to build the list.
         private void PopulateList()    
         {
         torrentList.Clear();
@@ -436,6 +476,7 @@ namespace mptransmission
             }
         }
 
+        // This method does not add any items, it simply updates the labes with any changed data in the arrays.
         private void updateList()    
         {
             int i = 0;
@@ -459,12 +500,16 @@ namespace mptransmission
             }
         }
 
+        // This method is invoked when the window is changed within MediaPortal and a new XML skin file is loaded.
+        // At this point the timer is stopped.
         protected override void OnPageDestroy(int newWindowId)
         {
             base.OnPageDestroy(newWindowId);
             aTimer.Stop();
         }
 
+        // This method removes any torrents in the list that are no longer active or paused (they have been removed)
+        // and it rebuilds the list with the remaining data in the arrays.
         private void rePopulateList()
         {
             int i = torrentList.ListItems.Count;
@@ -491,6 +536,9 @@ namespace mptransmission
             }
         }
 
+        // This method is invoked when an item in the list is clicked, it will perform no action if there
+        // are no torrents, otherwise it will save the current list, set the needsRestore boolean to true
+        // (for list recovery later) and switch the skin file to the torrent detail page.
         protected override void OnClicked(int controlId, GUIControl control, MediaPortal.GUI.Library.Action.ActionType actionType)
         {
             variables.selTorrent = torrentList.SelectedListItemIndex;
@@ -506,15 +554,18 @@ namespace mptransmission
             }
         }
 
+        // This method is invoked when the context menu key is pressed within MediaPortal.
         protected override void OnShowContextMenu()
         {
+            // Check what the selected torrent is.
             variables.selTorrent = torrentList.SelectedListItemIndex;
+            // Create a dialog menu item.
             GUIDialogMenu dlg = (GUIDialogMenu)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_DIALOG_MENU);
             if (dlg == null)
             {
                 return;
             }
-
+            // Here are the options presented to the user for that torrent.
             dlg.Reset();
             dlg.SetHeading("Torrent Options");
             dlg.Add("Start");
@@ -526,6 +577,7 @@ namespace mptransmission
             dlg.Add("Stats");
             dlg.DoModal(GUIWindowManager.ActiveWindow);
 
+            // The below set of switches call the various methods described above depending on the option chosen.
             switch (dlg.SelectedLabelText)
             {
                 case "Start":
@@ -575,6 +627,8 @@ namespace mptransmission
                     };
                 case "Remove":
                     {
+                        // In this case we need to ask the user which type of remove they want to perform, the default
+                        // option is to highlight "No" to preserve data.
                         int selected = variables.torrentID[variables.selTorrent];
                         GUIDialogYesNo ask = (GUIDialogYesNo)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_DIALOG_YES_NO);
                         ask.Reset();
@@ -597,6 +651,12 @@ namespace mptransmission
             }
         }
 
+        #endregion
+
+        #region TransmissionClient
+
+        // This class is the transmission client that connects to the RPC server and passes the methods that
+        // have been requested. This was written by Atif Aziz and can be found here: https://groups.google.com/forum/?fromgroups#!topic/jayrock/x04j8lfmAbE
         public class TransmissionClient
         {
             public Uri Url { get; private set; }
@@ -709,5 +769,8 @@ namespace mptransmission
                 }
             }
         }
+
+        #endregion
+
     }
 }
