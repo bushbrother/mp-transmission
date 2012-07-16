@@ -62,11 +62,11 @@ C:\Users\Richards\Documents\Visual Studio 2010\Projects\mptransmission\bin\Relea
 C:\Users\Richards\Documents\Visual Studio 2010\Projects\mptransmission\bin\Release\Ionic.Zip.dll
 C:\Users\Richards\Documents\Visual Studio 2010\Projects\mptransmission\obj\Release\ResolveAssemblyReference.cache
 C:\Users\Richards\Documents\Visual Studio 2010\Projects\mptransmission\obj\Release\mptransmission.SetupForm.resources
-C:\Users\Richards\Documents\Visual Studio 2010\Projects\mptransmission\obj\Release\ResGen.read.1.tlog
-C:\Users\Richards\Documents\Visual Studio 2010\Projects\mptransmission\obj\Release\ResGen.write.1.tlog
 C:\Users\Richards\Documents\Visual Studio 2010\Projects\mptransmission\obj\Release\mptransmission.dll
 C:\Users\Richards\Documents\Visual Studio 2010\Projects\mptransmission\obj\Release\mptransmission.pdb
 C:\Users\Richards\Documents\Visual Studio 2010\Projects\mptransmission\obj\Release\mptransmission.g.resources
 C:\Users\Richards\Documents\Visual Studio 2010\Projects\mptransmission\bin\Release\Jayrock.pdb
 C:\Users\Richards\Documents\Visual Studio 2010\Projects\mptransmission\bin\Release\Jayrock.Json.pdb
 C:\Users\Richards\Documents\Visual Studio 2010\Projects\mptransmission\obj\Release\mptransmission.Properties.Resources.resources
+C:\Users\Richards\Documents\Visual Studio 2010\Projects\mptransmission\obj\Release\ResGen.read.1.tlog
+C:\Users\Richards\Documents\Visual Studio 2010\Projects\mptransmission\obj\Release\ResGen.write.1.tlog
