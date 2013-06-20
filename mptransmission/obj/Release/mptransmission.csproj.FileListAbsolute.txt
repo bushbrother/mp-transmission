@@ -70,3 +70,31 @@ C:\Users\Richards\Documents\Visual Studio 2010\Projects\mptransmission\bin\Relea
 C:\Users\Richards\Documents\Visual Studio 2010\Projects\mptransmission\obj\Release\mptransmission.Properties.Resources.resources
 C:\Users\Richards\Documents\Visual Studio 2010\Projects\mptransmission\obj\Release\ResGen.read.1.tlog
 C:\Users\Richards\Documents\Visual Studio 2010\Projects\mptransmission\obj\Release\ResGen.write.1.tlog
+C:\Users\Laurie\Documents\mp-transmission\mptransmission\bin\Release\mptransmission.dll
+C:\Users\Laurie\Documents\mp-transmission\mptransmission\bin\Release\mptransmission.pdb
+C:\Users\Laurie\Documents\mp-transmission\mptransmission\bin\Release\Common.Utils.dll
+C:\Users\Laurie\Documents\mp-transmission\mptransmission\bin\Release\Core.dll
+C:\Users\Laurie\Documents\mp-transmission\mptransmission\bin\Release\Dialogs.dll
+C:\Users\Laurie\Documents\mp-transmission\mptransmission\bin\Release\Jayrock.dll
+C:\Users\Laurie\Documents\mp-transmission\mptransmission\bin\Release\Jayrock.Json.dll
+C:\Users\Laurie\Documents\mp-transmission\mptransmission\bin\Release\log4net.dll
+C:\Users\Laurie\Documents\mp-transmission\mptransmission\bin\Release\Bass.Net.dll
+C:\Users\Laurie\Documents\mp-transmission\mptransmission\bin\Release\DirectShowLib.dll
+C:\Users\Laurie\Documents\mp-transmission\mptransmission\bin\Release\BassVisAPI.Net.dll
+C:\Users\Laurie\Documents\mp-transmission\mptransmission\bin\Release\taglib-sharp.dll
+C:\Users\Laurie\Documents\mp-transmission\mptransmission\bin\Release\AxInterop.WMPLib.dll
+C:\Users\Laurie\Documents\mp-transmission\mptransmission\bin\Release\edtftpnet-1.2.2.dll
+C:\Users\Laurie\Documents\mp-transmission\mptransmission\bin\Release\BassRegistration.dll
+C:\Users\Laurie\Documents\mp-transmission\mptransmission\bin\Release\MediaPortal.Support.dll
+C:\Users\Laurie\Documents\mp-transmission\mptransmission\bin\Release\Interop.WMPLib.dll
+C:\Users\Laurie\Documents\mp-transmission\mptransmission\bin\Release\Microsoft.WindowsAPICodePack.Shell.dll
+C:\Users\Laurie\Documents\mp-transmission\mptransmission\bin\Release\Ionic.Zip.dll
+C:\Users\Laurie\Documents\mp-transmission\mptransmission\bin\Release\Microsoft.WindowsAPICodePack.dll
+C:\Users\Laurie\Documents\mp-transmission\mptransmission\bin\Release\Jayrock.pdb
+C:\Users\Laurie\Documents\mp-transmission\mptransmission\bin\Release\Jayrock.Json.pdb
+C:\Users\Laurie\Documents\mp-transmission\mptransmission\obj\Release\mptransmission.g.resources
+C:\Users\Laurie\Documents\mp-transmission\mptransmission\obj\Release\mptransmission.Properties.Resources.resources
+C:\Users\Laurie\Documents\mp-transmission\mptransmission\obj\Release\mptransmission.SetupForm.resources
+C:\Users\Laurie\Documents\mp-transmission\mptransmission\obj\Release\mptransmission.csproj.GenerateResource.Cache
+C:\Users\Laurie\Documents\mp-transmission\mptransmission\obj\Release\mptransmission.dll
+C:\Users\Laurie\Documents\mp-transmission\mptransmission\obj\Release\mptransmission.pdb
